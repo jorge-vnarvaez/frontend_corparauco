@@ -1,0 +1,45 @@
+$borderWidths: 10;
+$borderStyles: dashed, dotted, double, solid, groove, hidden, inherit, inset, outset, ridge, none;
+
+@each $color_name, $color_color in $colors {
+    @each $color_type, $color_value in $color_color {
+        
+        @if $color_type == 'base' {
+            .#{$color_name}--border {
+                border-color: $color_value;
+            }
+        }
+
+        .#{$color_name}--border.border--#{$color_type} {
+
+            border-color: $color_value;
+
+            &.highlight:hover {
+                @if $color_type == 'lighten-2' or $color_type == 'lighten-3' or $color_type == 'lighten-4' {
+                    background:mix(lighten($color_value, 20%), white);
+                } @else {
+                    background:mix(lighten($color_value, 35%), white);
+                }
+            }
+
+        }
+    }
+}
+
+@for $i from 0 through $borderWidths {
+    .border-width-#{$i} {
+        border-width: #{$i}px;
+
+        
+    }
+}
+
+@each $borderStyle in $borderStyles {
+    .border-style-#{$borderStyle} {
+        border-style: $borderStyle;
+        @if($borderStyle == none){
+            outline: 0px solid transparent;
+        }
+    } 
+}
+

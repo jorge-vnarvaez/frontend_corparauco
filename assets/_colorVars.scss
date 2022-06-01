@@ -1,0 +1,62 @@
+@function map-deep-merge($parent-map, $child-map){
+  $result: $parent-map;
+
+  @each $key, $child in $child-map{
+    $parent-has-key: map-has-key($result, $key);
+    $parent-value: map-get($result, $key);
+    $parent-type: type-of($parent-value);
+    $child-type: type-of($child);
+    $parent-is-map: $parent-type == map;
+    $child-is-map: $child-type == map;
+
+    @if (not $parent-has-key) or ($parent-type != $child-type) or (not ($parent-is-map and $child-is-map)) {
+        $result: map-merge($result, ( $key: $child ));
+    }
+
+    @else {
+        $result: map-merge($result, ( $key: map-deep-merge($parent-value, $child) ));
+    }
+  }
+  @return $result;
+}
+
+$colorestema: (
+    'nube': #dfe4ea,
+    'coal': #596275,
+    'test': #3742fa,
+);
+
+$colores: () !default;
+@each $keyColor, $valueColor in $colorestema {
+    $pruebaArray: (
+        $keyColor: (
+            'base': $valueColor,
+            'lighten-5': lighten($valueColor,45%),
+            'lighten-4': lighten($valueColor,35%),
+            'lighten-3': lighten($valueColor,25%),
+            'lighten-2': lighten($valueColor,18%),
+            'lighten-1': lighten($valueColor,10%),
+            'darken-1': darken($valueColor,10%),
+            'darken-2': darken($valueColor,20%),
+            'darken-3': darken($valueColor,30%),
+            'darken-4': darken($valueColor,40%),
+            'accent-1': saturate($valueColor,20%),
+            'accent-2': saturate($valueColor,30%),
+            'accent-3': saturate($valueColor,70%),
+            'accent-4': saturate($valueColor,100%),
+        ),
+    );
+    $colores: map-deep-merge($pruebaArray, $colores);
+}
+
+
+:export {
+    @each $color_name, $color_color in $colores {
+        @each $color_type, $color_value in $color_color {
+            @if $color_type == 'base' {
+                #{$color_name}: $color_value;
+            }
+            #{$color_name}--block--#{$color_type}: $color_value;
+        }
+    }
+}

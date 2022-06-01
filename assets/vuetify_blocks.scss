@@ -1,0 +1,240 @@
+@import '~vuetify/src/styles/styles.sass';
+@import 'borders';
+@import 'colorVars';
+
+@function map-deep-get-color($map, $keys...) {
+    @each $key in $keys {
+        @if map-has-key($map, $key) {
+            $map: map-get($map, $key);
+        } @else {
+            $map: white;
+        }   
+    }
+    @return $map;
+}
+
+$mapColores: (
+    'lighten-5':    'darken-3',
+    'lighten-4':    'darken-4',
+    'lighten-3':    'darken-2',
+    'lighten-2':    'lighten-5',
+    'lighten-1':    'lighten-4',
+    'base':         'lighten-5',
+    'darken-1':     'lighten-4',
+    'darken-2':     'lighten-3',
+    'darken-3':     'lighten-3',
+    'darken-4':     'lighten-2',
+    'accent-1':     'darken-4',
+    'accent-2':     'lighten-4',
+    'accent-3':     'lighten-4',
+    'accent-4':     'lighten-3',
+    'black':        'white',
+    'white':        'black',
+    'transparent':  'transparent',
+);
+
+$escalasGrises: 4;
+$saltoEscalaGrises: 25%;
+
+$colors: map-merge($colors,$colores);
+
+@each $color_name, $color_color in $colors {
+    @each $color_type, $color_value in $color_color {
+        
+        $targetMap:map-get($mapColores, $color_type);
+        $colorVariable: map-deep-get-color($colors, $color_name, $targetMap);
+        $colorVariableMix: map-deep-get-color($colors, $color_name, $color_type);
+
+        // ? Text
+        .#{$color_name}--text, .#{$color_name}--text *  {
+          color:$color_value; 
+        }
+        .#{$color_name}--text.text--#{$color_type}, .#{$color_name}--text.text--#{$color_type} * {
+          color:$color_value; 
+        }
+
+
+        // ? Div
+        .#{$color_name} {
+          background:$color_value; 
+        }
+        .#{$color_name}.#{$color_type} {
+          background:$color_value;
+        }
+
+
+        // Colores normales
+        .#{$color_name}--block--#{$color_type} {
+
+            background:$color_value; 
+            border-color: $colorVariable;
+            color: $colorVariable;
+
+            & > .v-divider {
+                border-color: transparentize($colorVariable, 0.7);
+            }
+            @for $iEscala from 0 through $escalasGrises {
+                &.block-grayscale-#{$iEscala}{
+                    background:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+                    border-color:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+                    color:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+                }
+                & > .v-divider {
+                    border-color: transparentize(desaturate($colorVariable, $iEscala * $saltoEscalaGrises), 0.7);
+                }
+            }
+            &.inverse--block {
+                background:$colorVariable; 
+                border-color: $color_value;
+                color: $color_value;
+
+                & > .v-divider {
+                    border-color: transparentize($color_value, 0.7);
+                }
+
+                @for $iEscala from 0 through $escalasGrises {
+                    &.block-grayscale-#{$iEscala}{
+                        background:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+                        border-color:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+                        color:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+                    }
+                    & > .v-divider {
+                        border-color: transparentize(desaturate($color_value, $iEscala * $saltoEscalaGrises), 0.7);
+                    }
+                }
+
+            }
+        }
+
+        // Colores en hover
+        .h-#{$color_name}--block--#{$color_type}:hover {
+
+            background:$color_value; 
+            border-color: $colorVariable;
+            color: $colorVariable;
+
+            & > .v-divider {
+                border-color: transparentize($colorVariable, 0.7);
+            }
+            @for $iEscala from 0 through $escalasGrises {
+                &.h-block-grayscale-#{$iEscala}{
+                    background:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+                    border-color:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+                    color:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+                }
+                & > .v-divider {
+                    border-color: transparentize(desaturate($colorVariable, $iEscala * $saltoEscalaGrises), 0.7);
+                }
+            }
+
+
+            &.h-inverse--block {
+                background:$colorVariable; 
+                border-color: $color_value;
+                color: $color_value;
+
+                & > .v-divider {
+                    border-color: transparentize($color_value, 0.7);
+                }
+
+                @for $iEscala from 0 through $escalasGrises {
+                    &.h-block-grayscale-#{$iEscala}{
+                        background:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+                        border-color:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+                        color:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+                    }
+                    & > .v-divider {
+                        border-color: transparentize(desaturate($color_value, $iEscala * $saltoEscalaGrises), 0.7);
+                    }
+                }
+                
+              }
+
+        }
+
+        // // Color de contenido
+        // .#{$color_name}--block-content--#{$color_type} {
+
+        //     border-color: $color_value !important;
+        //     color: $color_value !important;
+
+        //     & > .v-divider {
+        //         border-color: transparentize($color_value, 0.7) !important;
+        //     }
+
+        //     @for $iEscala from 1 through $escalasGrises {
+        //         &.block-grayscale-#{$iEscala}{
+        //             border-color:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+        //             color:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+        //         }
+        //         & > .v-divider {
+        //             border-color: transparentize(desaturate($color_value, $iEscala * $saltoEscalaGrises), 0.7);
+        //         }
+        //     }
+
+
+        //     &.inverse--block {
+
+        //         border-color: $colorVariable !important;
+        //         color: $colorVariable !important;
+
+        //         & > .v-divider {
+        //             border-color: transparentize($colorVariable, 0.7) !important;
+        //         }
+
+        //         @for $iEscala from 1 through $escalasGrises {
+        //             &.block-grayscale-#{$iEscala}{
+        //                 border-color:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+        //                 color:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+        //             }
+        //             & > .v-divider {
+        //                 border-color: transparentize(desaturate($colorVariable, $iEscala * $saltoEscalaGrises), 0.7);
+        //             }
+        //         }
+
+        //     }
+        // }
+
+        // Color de contenido hover
+        // .h-#{$color_name}--block-content--#{$color_type}:hover {
+
+        //     border-color: $color_value !important;
+        //     color: $color_value !important;
+
+        //     & > .v-divider {
+        //         border-color: transparentize($color_value, 0.7) !important;
+        //     }
+
+        //     @for $iEscala from 1 through $escalasGrises {
+        //         &.block-grayscale-#{$iEscala}{
+        //             border-color:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+        //             color:desaturate($color_value, $iEscala * $saltoEscalaGrises);
+        //         }
+        //         & > .v-divider {
+        //             border-color: transparentize(desaturate($color_value, $iEscala * $saltoEscalaGrises), 0.7);
+        //         }
+        //     }
+
+        //     &.h-inverse--block {
+
+        //         border-color: $colorVariable !important;
+        //         color: $colorVariable !important;
+
+        //         & > .v-divider {
+        //             border-color: transparentize($colorVariable, 0.7) !important;
+        //         }
+
+        //         @for $iEscala from 1 through $escalasGrises {
+        //             &.block-grayscale-#{$iEscala}{
+        //                 border-color:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+        //                 color:desaturate($colorVariable, $iEscala * $saltoEscalaGrises);
+        //             }
+        //             & > .v-divider {
+        //                 border-color: transparentize(desaturate($colorVariable, $iEscala * $saltoEscalaGrises), 0.7);
+        //             }
+        //         }
+
+        //     }
+        // }
+    }
+}
