@@ -74,7 +74,7 @@
               :rules="reglaNotNull"
               placeholder="Contraseña"
               class="
-                mt-12
+                mt-6
                 block
                 w-full
                 border-none
@@ -83,29 +83,19 @@
                 rounded-xl
                 shadow-lg
                 focus:ring-0
+                mb-4
               "
               solo
               flat
             ></v-text-field>
 
-            <div class="mt-7 flex">
-              <div class="w-full text-right">
-                <a
-                  class="underline text-sm text-gray-600 hover:text-gray-900"
-                  href="#"
-                >
-                  ¿Olvidó su contraseña?
-                </a>
-              </div>
-            </div>
-
             <button
               type="submit"
               class="
-              mt-4
                 bg-blue-800
                 w-full
                 py-3
+                mt-4
                 rounded-xl
                 shadow-xl
                 transition
@@ -115,7 +105,7 @@
                 hover:-translate-x hover:scale-105
               "
             >
-              <span class="text-white">Login</span>
+              <span class="text-white mt-4">Iniciar sesión</span>
             </button>
 
             <div class="mt-7">

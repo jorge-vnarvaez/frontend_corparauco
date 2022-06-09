@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-zinc-100">
+  <div class="bg-gradient-to-b from-slate-50 to-white">
     <v-container class="grid grid-cols-12 my-12 gap-x-8">
       <div
         class="
@@ -83,7 +83,7 @@
         </div>
 
          <div v-if="tab == 8">
-          <mis-eventos />
+          <mis-eventos :eventos="user.data.eventos" />
         </div>
       </div>
 
@@ -140,7 +140,7 @@ export default {
         { id: 5, label: "SERCOTEC", icon: "" },
       ],
       user_menus: [
-        { id: 6, label: "Mis Programas" },
+        // { id: 6, label: "Mis Programas" },
         // { id: 7, label: "Mis Cursos" },
         { id: 8, label: "Mis Eventos" },
         // { id: 9, label: "Mis Empresas" },

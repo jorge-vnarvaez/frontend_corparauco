@@ -12,6 +12,8 @@ export default {
         "inscripciones",
         "inscripciones_meta",
         "contenidos",
+        "users",
+        "calendario"
       ],
     });
 
@@ -44,6 +46,7 @@ export default {
         "galeria",
         "secciones",
         "inscripciones",
+        "calendario"
       ],
     });
 

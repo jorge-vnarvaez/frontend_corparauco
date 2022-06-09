@@ -7,7 +7,7 @@
           : ``
       }`"
       gradient="to top right, rgba(14, 116, 144,.44), rgba(25,32,72,.55)"
-      class="flex space-y-8 lg:space-y-48"
+      class="flex py-24"
     >
       <v-container class="text-white">
         <p class="text-2xl text-white font-bold lg:text-6xl">
@@ -15,22 +15,33 @@
         </p>
 
         <div class="mt-20 flex flex-wrap space-x-0 lg:space-x-24">
-          <p class="text-xl lg:text-2xl lg:leading-relaxed font-thin lg:w-6/12">
+          <p class="text-xl lg:text-2xl lg:leading-relaxed lg:w-6/12">
             {{ emprendedor.attributes.descripcion }}
           </p>
 
           <div class="flex flex-col space-y-16">
-            <div v-if="emprendedor.attributes.usuarios.data.length > 0">
+            <div
+              v-if="
+                emprendedor.attributes.usuarios.data.length > 0 ||
+                emprendedor.attributes.emprendedores.length > 0
+              "
+            >
               <p class="text-2xl lg:text-4xl font-bold mb-8">Emprendedores</p>
               <div class="flex">
                 <div
-                  v-for="(persona, index) in emprendedor.attributes.emprendedores.concat(emprendedor.attributes.usuarios.data.map((usuario) => usuario.attributes))"
+                  v-for="(
+                    persona, index
+                  ) in emprendedor.attributes.emprendedores.concat(
+                    emprendedor.attributes.usuarios.data.map(
+                      (usuario) => usuario.attributes
+                    )
+                  )"
                   :key="index"
                   class="w-24 h-24 mx-4"
                 >
                   <v-img
                     v-if="persona.foto_perfil.data"
-                    :src="`${$config.apiUrl}${persona.foto_perfil.data.attributes.url }`"
+                    :src="`${$config.apiUrl}${persona.foto_perfil.data.attributes.url}`"
                     class="w-24 h-24 rounded-full"
                   ></v-img>
 
@@ -55,7 +66,7 @@
               <div v-if="emprendedor.attributes.correo">
                 <div class="flex items-center mt-4">
                   <v-icon color="white" x-large>mdi-email-outline</v-icon>
-                  <span class="text-xl mb-0 ml-4 font-thin">{{
+                  <span class="text-xl mb-0 ml-4">{{
                     emprendedor.attributes.correo
                   }}</span>
                 </div>
@@ -136,25 +147,65 @@
           </div>
         </div>
 
-        <div v-if="emprendedor.attributes.servicios.length > 0" class="pb-48">
-          <p class="text-2xl lg:text-4xl font-bold mt-20">Productos y/o servicios.</p>
-          <div class="grid grid-cols-12 gap-x-8">
+        <div v-if="emprendedor.attributes.servicios" class="pb-48">
+          <p class="text-2xl lg:text-4xl font-bold mt-20">
+            Productos y/o servicios.
+          </p>
+          <div class="flex flex-wrap gap-x-8">
             <div
               v-for="(servicio, index) in emprendedor.attributes.servicios"
               :key="index"
-              class="col-span-12 lg:col-span-3"
+              class="mt-12"
             >
-              <div v-if="servicio.galeria.data" class="flex flex-col lg:flex-row space-x-0 lg:space-x-8">
-                <v-img
-                  v-for="imagen in servicio.galeria.data"
-                  :key="imagen.id"
-                  :src="`${$config.apiUrl}${imagen.attributes.url}`"
-                  class="rounded-lg"
-                ></v-img>
+              <div v-if="servicio.galeria.data">
+                <div v-if="servicio.galeria.data.length == 1">
+                  <v-img
+                    :width="width"
+                    height="350"
+                    :src="`${$config.apiUrl}${servicio.galeria.data[0].attributes.url}`"
+                    gradient="to top right, rgba(14, 116, 144,.33), rgba(25,32,72, .44)"
+                    class="flex align-center text-center rounded-lg pa-8"
+                  >
+                    <p class="text-white font-bold text-xl">
+                      {{ servicio.nombre }}
+                    </p>
+                  </v-img>
+                </div>
+
+                <div v-else class="flex flex-wrap gap-x-8 gap-y-8">
+                  <v-img
+                    :width="width"
+                    height="350"
+                    :src="`${$config.apiUrl}${servicio.galeria.data[0].attributes.url}`"
+                    gradient="to top right, rgba(14, 116, 144,.33), rgba(25,32,72, .44)"
+                    class="w-96 flex align-center text-center rounded-lg pa-8"
+                  >
+                    <p class="text-white font-bold text-xl">
+                      {{ servicio.nombre }}
+                    </p>
+                  </v-img>
+
+                  <v-img
+                    v-for="(imagen, index) in servicio.galeria.data.slice(
+                      1,
+                      servicio.galeria.data.length
+                    )"
+                    :key="index"
+                    :width="width"
+                    height="350"
+                    class="rounded-lg"
+                    :src="`${$config.apiUrl}${imagen.attributes.url}`"
+                    gradient="to top right, rgba(14, 116, 144,.33), rgba(25,32,72, .44)"
+                  >
+                  </v-img>
+                </div>
               </div>
-              <p class="mt-8 text-2xl" v-if="servicio.nombre">
-                {{ servicio.nombre }}
-              </p>
+
+              <div v-else class="flex flex-wrap rounded-lg">
+                  <div class="text-white flex align-center font-bold text-xl">
+                    {{ servicio.nombre }}
+                  </div>
+              </div>
             </div>
           </div>
         </div>
@@ -178,7 +229,7 @@ export default {
         "servicios",
         "servicios.galeria",
         "emprendedores",
-        "emprendedores.foto_perfil"
+        "emprendedores.foto_perfil",
       ],
     });
 
@@ -193,6 +244,15 @@ export default {
   computed: {
     has_image() {
       return (image) => (image != null ? true : false);
+    },
+     width() {
+      switch(this.$vuetify.breakpoint.name) {
+        case 'xs': return 320
+          case 'sm': return 340
+          case 'md': return 600
+          case 'lg': return 600
+          case 'xl': return 600
+      }
     },
   },
 };

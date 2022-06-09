@@ -23,7 +23,7 @@
         :src="`${$config.apiUrl}${empresa.attributes.imagen_referencia.data.attributes.url}`"
         class="h-80 rounded-2xl shadow-md border border-gray-50"
       ></v-img>
-      <v-img v-if="!empresa.attributes.imagen_referencia.data" class="h-80 rounded-2xl border border-gray-50"> 
+      <v-img v-if="!empresa.attributes.imagen_referencia.data" src="/emprendimiento_no_disponible.jpeg" class="h-80 rounded-2xl border border-gray-50"> 
 
       </v-img>
       <div class="text-gray-900">

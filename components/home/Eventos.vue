@@ -45,7 +45,7 @@
 
             <div
               v-if="!evento.attributes.is_public"
-              class="bg-green-600 px-4 rounded-full py-1 white--text text-sm"
+              class="bg-green-800 px-4 rounded-full py-1 white--text text-sm"
             >
               <span>Requiere inscripción</span>
             </div>
@@ -65,7 +65,14 @@ export default {
     };
   },
   async fetch() {
-    this.eventos = await fetch(`${this.$config.apiUrl}/api/eventos`).then(
+    const qs = require('qs');
+
+    const query = qs.stringify({
+      sort: ['fecha_inicio:desc']
+    })
+
+
+    this.eventos = await fetch(`${this.$config.apiUrl}/api/eventos?${query}`).then(
       (res) => res.json()
     );
   },

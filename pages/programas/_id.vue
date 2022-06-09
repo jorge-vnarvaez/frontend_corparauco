@@ -2,11 +2,22 @@
   <div class="bg-gradient-to-b from-slate-50 to-white">
     <v-container class="mb-24 py-16" v-if="programa">
       <div>
-        <p class="text-2xl lg:text-6xl font-bold text-gray-700">
-          {{ programa.attributes.titulo }}
-        </p>
+        <div class="flex lg:flex-row flex-col align-center justify-between">
+          <p class="text-2xl lg:text-6xl font-bold text-gray-700">
+            {{ programa.attributes.titulo }}
+          </p>
+          <v-btn
+            v-if="programa.attributes.pagina_programa"
+            class="py-3"
+            color="blue-grey darken-4"
+            ><v-icon color="white">mdi-web</v-icon
+            ><a class="ml-2 py-4" :href="programa.attributes.pagina_programa" target="_blank"
+              ><span class="text-white">Ver página web del programa</span></a
+            ></v-btn
+          >
+        </div>
         <p class="text-2xl font-light leading-relaxed mt-12 text-gray-600">
-          {{ programa.attributes.sumario }}
+          {{ programa.attributes.descripcion }}
         </p>
       </div>
 
@@ -19,7 +30,9 @@
           :key="section.id"
           class="flex flex-col col-span-12 lg:col-span-6"
         >
-          <span class="text-xl lg:text-3xl font-bold text-gray-700">{{ section.titulo }}</span>
+          <span class="text-xl lg:text-3xl font-bold text-gray-700">{{
+            section.titulo
+          }}</span>
           <span class="text-lg lg:text-2xl my-16 text-gray-600">{{
             section.texto
           }}</span>

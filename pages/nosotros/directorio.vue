@@ -6,7 +6,7 @@
         position="top"
         :height="$vuetify.breakpoint.mobile ? '100vh' : '60vh'"
         :src="`${$config.apiUrl}${pagina.header.imagen.data.attributes.url}`"
-        class="w-full my-auto mx-auto"
+        class="w-full my-auto mx-auto py-8"
         gradient="to top right, rgba(14, 116, 144,.33), rgba(25,32,72, .22)"
       >
         <div

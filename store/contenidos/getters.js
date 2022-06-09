@@ -12,27 +12,27 @@ export const getLastContenido = (state) => {
 
 export const getVideos = (state) => (contenidos) => {
   return contenidos.filter(
-    (contenido) => contenido.attributes.formato.data.attributes.name == "Videos"
+    (contenido) => contenido.attributes.formato.data.attributes.nombre == "Videos"
   );
 };
 
 export const getInfografias = (state) => (contenidos) => {
   return contenidos.filter(
     (contenido) =>
-      contenido.attributes.formato.data.attributes.name == "Infografías"
+      contenido.attributes.formato.data.attributes.nombre == "Infografías"
   );
 };
 
 export const getClases = (state) => (contenidos) => {
   return contenidos.filter(
     (contenido) =>
-      contenido.attributes.formato.data.attributes.name == "Guías y clases"
+      contenido.attributes.formato.data.attributes.nombre == "Guías y clases"
   );
 };
 
 export const getNContenidos = (state) => (title) => {
   return state.contenidos.map(function (contenido) {
-    return contenido.attributes.organizadores.data.filter((organizador) => organizador.attributes.title == title).length;
+    return contenido.attributes.organizadores.data.filter((organizador) => organizador.attributes.titulo == title).length;
   }).reduce((total, n) => total + n);
 };
 

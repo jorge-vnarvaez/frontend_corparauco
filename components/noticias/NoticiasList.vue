@@ -31,7 +31,7 @@
               {{ formatearFecha(ultimaNoticia.attributes.fecha_publicacion) }}
             </p>
             <p class="text-gray-900 text-xl lg:text-3xl h-36 h-36 font-semibold my-6">
-              {{ ultimaNoticia.attributes.title }}
+              {{ ultimaNoticia.attributes.titulo }}
             </p>
 
             <div class="flex items-center mt">

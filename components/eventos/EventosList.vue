@@ -37,21 +37,47 @@
             hover:bg-neutral-50
           "
         >
-          <v-img
-            v-if="ultimoEvento.attributes.imagen_referencia.data"
-            class="shadow-md rounded-xl h-96"
-            :src="`${$config.apiUrl}${ultimoEvento.attributes.imagen_referencia.data.attributes.url}`"
-          >
-          </v-img>
+          <div v-if="!ultimoEvento.attributes.imagen_cover.data">
+            <v-img
+              v-if="ultimoEvento.attributes.imagen_referencia.data"
+              class="shadow-md rounded-xl h-96"
+              :src="`${$config.apiUrl}${ultimoEvento.attributes.imagen_referencia.data.attributes.url}`"
+            >
+            </v-img>
 
-          <v-img v-if="!ultimoEvento.attributes.imagen_referencia.data" class="h-96 rounded-2xl border border-gray-50"> 
-          </v-img>
+            <v-img
+              v-if="!ultimoEvento.attributes.imagen_referencia.data"
+              class="h-96 rounded-2xl border border-gray-50"
+            >
+            </v-img>
+          </div>
+
+          <div v-else>
+            <v-img
+              v-if="ultimoEvento.attributes.imagen_cover.data"
+              class="shadow-md rounded-xl h-96"
+              :src="`${$config.apiUrl}${ultimoEvento.attributes.imagen_cover.data.attributes.url}`"
+            >
+            </v-img>
+          </div>
 
           <div class="flex flex-col items-between">
-            <p class="text-gray-900 text-xl mt-6" v-if="ultimoEvento.attributes.fecha_inicio">
+            <p
+              class="text-gray-900 text-xl mt-6"
+              v-if="ultimoEvento.attributes.fecha_inicio"
+            >
               {{ formatearFecha(ultimoEvento.attributes.fecha_inicio) }}
             </p>
-            <p class="text-gray-900 text-xl lg:text-3xl h-36 font-semibold h-16 my-6">
+            <p
+              class="
+                text-gray-900 text-xl
+                lg:text-3xl
+                h-36
+                font-semibold
+                h-16
+                my-6
+              "
+            >
               {{ ultimoEvento.attributes.titulo }}
             </p>
 
@@ -88,19 +114,32 @@
               :src="`${$config.apiUrl}${evento.attributes.imagen_referencia.data.attributes.url}`"
             ></v-img>
 
-            <v-img v-if="!evento.attributes.imagen_referencia.data" class="h-96 rounded-2xl border border-gray-50"> 
-
-
-          </v-img>
+            <v-img
+              v-if="!evento.attributes.imagen_referencia.data"
+              class="h-96 rounded-2xl border border-gray-50"
+            >
+            </v-img>
             <div class="flex flex-col items-between">
-              <p class="text-gray-900 text-xl mt-6" v-if="evento.attributes.fecha_inicio">
+              <p
+                class="text-gray-900 text-xl mt-6"
+                v-if="evento.attributes.fecha_inicio"
+              >
                 {{ formatearFecha(evento.attributes.fecha_inicio) }}
               </p>
 
-              <div class="text-gray-900 text-xl h-16" v-if="!evento.attributes.fecha_inicio">
-
-              </div>
-              <p class="text-gray-900 text-xl lg:text-3xl font-semibold h-36 my-6">
+              <div
+                class="text-gray-900 text-xl h-16"
+                v-if="!evento.attributes.fecha_inicio"
+              ></div>
+              <p
+                class="
+                  text-gray-900 text-xl
+                  lg:text-3xl
+                  font-semibold
+                  h-36
+                  my-6
+                "
+              >
                 {{ evento.attributes.titulo }}
               </p>
 
@@ -146,15 +185,21 @@ export default {
       return (fecha) => moment(fecha).format("LL");
     },
     col_span() {
-      switch(this.$vuetify.breakpoint.name) {
-        case 'xs': return 'col-span-12'
-        case 'sm': return 'col-span-6'
-        case 'md': return 'col-span-6'
-        case 'lg': return 'col-span-6'
-        case 'xl': return 'col-span-4'
-        default: return 'col-span-6'
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return "col-span-12";
+        case "sm":
+          return "col-span-6";
+        case "md":
+          return "col-span-6";
+        case "lg":
+          return "col-span-6";
+        case "xl":
+          return "col-span-4";
+        default:
+          return "col-span-6";
       }
-    }
+    },
   },
 };
 </script>

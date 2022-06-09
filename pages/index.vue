@@ -45,7 +45,7 @@
           "
         >
           <div
-            v-for="(noticia, index) in pagina.noticias.data"
+            v-for="(noticia, index) in noticias.slice(0, 6)"
             :key="noticia.id"
             :class="`${
               index % 2 == 0 || index == 3
@@ -78,7 +78,6 @@
                   `${$config.apiUrl}${
                   noticia.attributes.imagen_referencia.data.attributes.url}`
                 "
-                loading="lazy"
                 alt="Photo by Minh Pham"
                 class="
                   w-full
@@ -336,6 +335,9 @@ export default {
     },
     getSession() {
       return this.$cookies.get("user");
+    },
+    noticias() {
+      return this.$store.getters['noticias/getNoticias'];
     },
     fechaFormateada() {
       const moment = require("moment");

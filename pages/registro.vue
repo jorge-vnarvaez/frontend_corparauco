@@ -304,7 +304,7 @@ export default {
 
         if (!this.correoExiste && !this.rutExiste) {
           await this.$axios.post(
-            `http://localhost:1337/api/auth/local/register`,
+            `${this.$config.apiUrl}/api/auth/local/register`,
             {
               rut: this.rut != null ? this.rut : null,
               username: this.username,
@@ -323,7 +323,9 @@ export default {
               orden: 0,
               pais: this.pais,
             }
-          );
+          ).then(res => {
+            this.$router.push('iniciar_sesion')
+          });
         }
       }
     },

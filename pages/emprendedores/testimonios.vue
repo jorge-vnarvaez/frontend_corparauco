@@ -36,7 +36,7 @@
               rounded-full
             "
           >
-            {{ pagina.header.title }}
+            {{ pagina.header.titulo }}
           </p>
           <p
             class="
@@ -124,7 +124,7 @@
       </v-card>
     </v-container>
 
-    <v-container class="grid grid-cols-12 mb-48" v-if="organizaciones">
+    <v-container class="grid grid-cols-12 mb-48 gap-x-8" v-if="organizaciones">
       <div
         v-for="organizacion in organizaciones"
         :key="organizacion.id"

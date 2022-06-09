@@ -11,7 +11,9 @@
     >
       <v-container class="flex flex-col items-center justify-center py-12">
         <p class="mb-0 text-xl font-bold">Este evento ha terminado</p>
-        <p class="my-4">Revisa los próximos evento que tenemos disponibles</p>
+        <p class="my-4 text-center">
+          Revisa los próximos evento que tenemos disponibles
+        </p>
         <v-btn
           ><nuxt-link :to="{ name: 'eventos' }">Ver eventos</nuxt-link></v-btn
         >
@@ -28,18 +30,18 @@
     >
       <div class="mx-auto max-w-screen-xl grid grid-cols-12 gap-x-8">
         <div class="col-span-10 lg:col-span-5 text-white">
-          <p class="text-4xl lg:text-6xl w-5/12 font-bold leading-snug">
+          <p class="text-4xl lg:text-5xl font-bold leading-snug">
             {{ evento.data.attributes.titulo }}
           </p>
 
           <v-chip label color="teal" class="mt-2 lg:mt-0">
             <div class="text-white font-bold">
-              <span v-if="evento.data.attributes.es_publico"
-                ><v-icon class="mr-2">mdi-lock-open-variant</v-icon>Evento
-                público</span
+              <span v-if="evento.data.attributes.requiere_inscripcion"
+                ><v-icon class="mr-2">mdi-cellphone-information</v-icon>Requiere
+                inscripción</span
               >
-              <span v-if="!evento.data.attributes.es_publico"
-                ><v-icon class="mr-2">mdi-lock</v-icon>Evento privado</span
+              <span v-if="!evento.data.attributes.requiere_inscripcion"
+                >Evento público</span
               >
             </div>
           </v-chip>
@@ -72,33 +74,32 @@
             </v-chip>
           </div>
 
-          <div
-            class="flex items-center"
-            v-if="evento.data.attributes.fecha_inicio"
-          >
-            <v-icon color="white" large>mdi-calendar-outline</v-icon>
-            <p class="ml-4 normal-case text-xl mb-0 font-light">
-              Inicia:
-              <span class="font-thin">{{
-                fechaFormateada(evento.data.attributes.fecha_inicio)
-              }}</span>
-            </p>
+          <div v-if="evento.data.attributes.calendario">
+            <div class="flex items-center mb-4">
+              <v-icon color="white" large>mdi-calendar-outline</v-icon>
+              <p class="font-bold mb-0 text-xl ml-3">Calendario</p>
+            </div>
+            <div
+              class="flex items-center"
+              v-for="fecha in evento.data.attributes.calendario"
+              :key="fecha.id"
+            >
+              <p class="normal-case text-xl mb-0 font-light">
+                <span class="font-thin">{{ formatearDia(fecha.dia) }}</span>
+              </p>
+            </div>
           </div>
 
-          <div
-            class="flex items-center mt-4"
-            v-if="evento.data.attributes.fecha_termino"
-          >
-            <v-icon color="white" large>mdi-calendar-lock</v-icon>
-            <p class="ml-4 normal-case text-xl mb-0 font-light">
-              Termina: {{ formatearDia(evento.data.attributes.fecha_termino) }}
-            </p>
-          </div>
-          <div class="flex items-center my-6">
-            <v-icon color="white" large>mdi-map-marker-outline</v-icon>
-            <p class="ml-4 text-xl mb-0 font-light">
-              {{ evento.data.attributes.ubicacion }}
-            </p>
+          <div v-if="evento.data.attributes.ubicacion" class="my-6">
+            <div class="flex items-center">
+              <v-icon color="white" large>mdi-map-marker-outline</v-icon>
+              <p class="font-bold mb-0 text-xl ml-3">
+                Ubicación:
+                <span class="text-xl mb-0 font-light">
+                  {{ evento.data.attributes.ubicacion }}
+                </span>
+              </p>
+            </div>
           </div>
         </div>
 
@@ -122,10 +123,13 @@
               <p class="uppercase text-sm mt-4">
                 {{ formatearDia(contenido.dia) }}
               </p>
-              <v-divider></v-divider>
+              <v-divider class="mb-4"></v-divider>
               <div class="mb-10">
-                <p class="uppercase text-sm mt-6 text-blue-800 font-bold">
-                  {{ formatearHora(contenido.hora_inicio) }}
+                <p>
+                  <span class="font-bold"> {{ contenido.titulo }}</span> -
+                  <span class="uppercase text-sm mt-6 text-blue-800 font-bold">
+                    {{ formatearHora(contenido.hora_inicio) }}
+                  </span>
                 </p>
                 <span
                   v-if="contenido.descripcion"
@@ -144,30 +148,31 @@
             "
           >
             <p class="text-3xl font-bold text-blue-800 my-6">Inscripciones</p>
-            <div v-if="!evento.data.attributes.es_publico">
+            <div v-if="evento.data.attributes.requiere_inscripcion">
               <div v-if="evento.data.attributes.inscripciones_meta">
                 <span
                   v-html="evento.data.attributes.inscripciones_meta.excerpt"
                   class="mb-8"
                 ></span>
               </div>
-              <div class="my-6">
+              <div class="my-6" v-if="evento.data">
                 <p>
-                  Este es un evento privado lo que significa que tendrás que
-                  completar un formulario de inscripción para participar el día
-                  del evento, no te preocupes de todas maneras podrás seguir la
-                  transmisión en vivo desde tu hogar dicho día en caso de que no
-                  puedas inscribirte o asistir
+                  Este es un evento que requiere inscripción lo que significa
+                  que tendrás que completar un formulario para participar el día
+                  del evento, no te preocupes de todas maneras podrás seguir o
+                  revivir la transmisión en vivo desde tu hogar en caso de que
+                  no puedas inscribirte o asistir
                 </p>
-                <inscripcion-form :event="evento.data" />
+                <inscripcion-form :evento="evento.data" />
               </div>
             </div>
 
             <div v-else class="mb-6">
               <p>
-                Este es un evento público lo que significa que puedes participar
-                de manera presencial sin la necesidad de inscribirte previamente
-                , disfrutalo!
+                Este es un evento que no requiere de inscripción lo que
+                significa que puedes participar de manera presencial o del
+                evento en vivo sin la necesidad de inscribirte previamente ,
+                disfrutalo!
               </p>
             </div>
           </div>
@@ -237,7 +242,7 @@
             >
               <v-btn
                 v-if="evento.data.attributes.transmision_vivo"
-                color="amber darken-4"
+                color="red darken-2"
                 depressed
                 outlined
                 ><a
@@ -254,41 +259,39 @@
       </div>
     </v-img>
 
-    <v-container v-if="evento.data.attributes.galeria.length > 0">
-      <p class="text-2xl lg:text-5xl font-bold mt-16 text-center">
+    <v-container
+      v-if="
+        evento.data.attributes.galeria.length > 0 &&
+        is_finished(
+          evento.data.attributes.fecha_inicio,
+          evento.data.attributes.fecha_termino
+        )
+      "
+    >
+      <p class="text-2xl lg:text-5xl font-bold my-16 text-center">
         ¿Cómo se vivió este evento?
       </p>
-
-      <div
-        v-for="imagenes in evento.data.attributes.galeria"
-        :key="imagenes.id"
-        class="my-24"
-      >
+      <div class="grid grid-cols-12 lg:gap-x-8 gap-y-8">
         <div
-          class="grid grid-cols-12 gap-x-8 gap-y-8 my-8"
-          v-if="imagenes.imagenes.data"
+          class="col-span-12 lg:col-span-3"
+          v-for="(imagen, imagenIndex) in concatenar_imagenes(
+            evento.data.attributes.galeria
+          )"
+          :key="imagenIndex"
         >
+          <CoolLightBox
+            :items="concatenar_imagenes(evento.data.attributes.galeria)"
+            :index="index"
+            @close="index = null"
+          >
+          </CoolLightBox>
+
           <v-img
-            :src="`${$config.apiUrl}${imagenes.imagenes.data[0].attributes.url}`"
-            class="col-span-3 flex align-center text-center rounded-lg"
-            gradient="to top right, rgba(14, 116, 144,.33), rgba(25,32,72, .22)"
-            ><p class="text-2xl font-bold text-white">
-              {{ imagenes.titulo }}
-            </p></v-img
+            class="rounded-lg"
+            @click="index = imagenIndex"
+            :src="imagen"
           >
-          <div
-            v-for="imagen in imagenes.imagenes.data.slice(
-              1,
-              imagenes.imagenes.data.length
-            )"
-            :key="imagen.id"
-            class="col-span-3"
-          >
-            <v-img
-              :src="`${$config.apiUrl}${imagen.attributes.url}`"
-              class="rounded-lg"
-            ></v-img>
-          </div>
+          </v-img>
         </div>
       </div>
     </v-container>
@@ -323,10 +326,24 @@
 import { marked } from "marked";
 import moment from "moment";
 import InscripcionForm from "../../../components/eventos/inscripcion/InscripcionForm.vue";
+import CoolLightBox from "vue-cool-lightbox";
+import "vue-cool-lightbox/dist/vue-cool-lightbox.min.css";
 
 export default {
-  components: { InscripcionForm },
+  data() {
+    return {
+      index: null,
+      data_imagenes: [],
+    };
+  },
+  components: { InscripcionForm, CoolLightBox },
   methods: {
+    concatenar_imagenes(arreglos) {
+      const [arr1, arr2, arr3] = arreglos;
+      return arr1.imagenes.data
+        .concat(arr2.imagenes.data, arr3.imagenes.data)
+        .map((imagen) => this.$config.apiUrl + imagen.attributes.url);
+    },
     is_finished(fecha_inicio, fecha_termino) {
       const date = new Date();
       const ts_inicio = moment(fecha_inicio).format("x");
@@ -350,6 +367,7 @@ export default {
 
     const query = qs.stringify({
       populate: [
+        "calendario",
         "imagen_referencia",
         "contenidos",
         "colaboradores",

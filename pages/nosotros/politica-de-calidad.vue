@@ -94,7 +94,7 @@
           {{ pagina.secciones[1].titulo }}
         </p>
         <v-img
-          v-if="pagina.secciones[1].imagen"
+          v-if="pagina.secciones[1].imagen.data"
           :src="`${$config.apiUrl}${pagina.secciones[1].imagen.data.attributes.url}`"
           class="rounded-xl h-96"
           cover
@@ -123,7 +123,7 @@
         <v-img
           position="top"
           cover
-          v-if="pagina.secciones[3].imagen"
+          v-if="pagina.secciones[3].imagen.data"
           :src="`${$config.apiUrl}${pagina.secciones[3].imagen.data.attributes.url}`"
           class="rounded-xl h-96"
         ></v-img>
@@ -149,7 +149,7 @@
           {{ pagina.secciones[2].titulo }}
         </p>
         <v-img
-          v-if="pagina.secciones[2].imagen"
+          v-if="pagina.secciones[2].imagen.data"
           :src="`${$config.apiUrl}${pagina.secciones[2].imagen.data.attributes.url}`"
           class="rounded-xl h-2"
         ></v-img>

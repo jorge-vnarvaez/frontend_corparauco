@@ -1,15 +1,22 @@
 <template>
   <div class="mt-8" v-if="evento">
-    <v-dialog v-model="dialog" persistent max-width="600px">
+     <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on, attrs }">
-         <v-btn color="teal darken-4" outlined depressed dark v-bind="attrs" v-on="on">
+        <v-btn
+          color="teal darken-4"
+          outlined
+          depressed
+          dark
+          v-bind="attrs"
+          v-on="on"
+        >
           <span class="font-bold">Inscribete</span>
         </v-btn>
       </template>
       <v-card class="py-4">
         <v-card-title>
           <span class="text-2xl font-bold"
-            >{{ evento.attributes.title }} - Formulario de inscripción.</span
+            >{{ evento.attributes.titulo }} - Formulario de inscripción.</span
           >
           <span class="text-lg text-gray-700 mt-6 font-extralight"
             >Completa el siguiente formulario para inscribirte al evento.</span
@@ -19,9 +26,9 @@
           <v-container v-if="user">
             <v-form v-model="validado" lazy-validation ref="formulario">
               <v-row>
-                <v-col cols="12" sm="6" md="4">
+                <v-col cols="12" sm="6" md="4" v-if="user.rut">
                   <v-text-field
-                    v-model="user.data.rut"
+                    v-model="user.rut"
                     label="Rut / Run*"
                     :rules="reglaRut"
                     required
@@ -29,7 +36,7 @@
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field
-                    v-model="user.data.nombre"
+                    v-model="user.nombre"
                     label="Nombres*"
                     :rules="reglaNotNull"
                     required
@@ -37,7 +44,7 @@
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field
-                    v-model="user.data.apellidoPaterno"
+                    v-model="user.apellidoPaterno"
                     label="Apellido Paterno*"
                     :rules="reglaNotNull"
                     required
@@ -45,47 +52,15 @@
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field
-                    v-model="user.data.apellidoMaterno"
+                    v-model="user.apellidoMaterno"
                     label="Apellido Materno*"
                     :rules="reglaNotNull"
                     required
                   ></v-text-field>
                 </v-col>
-                <!-- <v-col cols="12" sm="6">
-                  <v-select
-                    :items="regiones"
-                    item-text="nombre"
-                    item-value="codigo"
-                    :rules="reglaNotNull"
-                    label="Región*"
-                    v-model="codigoRegion"
-                  ></v-select>
-                </v-col> -->
-                <!-- <<v-col cols="12" sm="4">
-                  <v-select
-                    :items="provincias"
-                    item-text="nombre"
-                    item-value="codigo"
-                    no-data-text="Debe seleccionar la región"
-                    :rules="reglaNotNull"
-                    label="Provincia*"
-                    v-model="codigoProvincia"
-                  ></v-select>
-                </v-col>
-                <v-col cols="12" sm="4">
-                  <v-select
-                    :items="comunas"
-                    item-text="nombre"
-                    item-value="codigo"
-                    no-data-text="Debe seleccionar la provincia"
-                    label="Comuna*"
-                    :rules="reglaNotNull"
-                    v-model="codigoComuna"
-                  ></v-select>
-                </v-col> -->
                 <v-col cols="12" sm="4">
                   <v-text-field
-                    v-model="user.data.telefono"
+                    v-model="user.telefono"
                     label="Teléfono"
                     :rules="reglaTelefono"
                     placeholder="Ej: 95551122"
@@ -94,7 +69,7 @@
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
-                    v-model="user.data.email"
+                    v-model="user.email"
                     label="Correo electrónico*"
                     :rules="reglaEmail"
                     placeholder="Ejemplo: micorreo@gmail.com"
@@ -126,7 +101,7 @@
 
           <confirmar-inscripcion
             :evento="evento"
-            :usuario="user.data"
+            :usuario="user"
             :dialogConfirmar="dialogConfirmar"
           />
         </v-card-actions>
@@ -171,10 +146,12 @@ export default {
       return this.$cookies.get("jwt");
     },
   },
-  async beforeMount() {
-    this.user = await this.$axios.get(
-      `${this.$config.apiUrl}/api/users/${this.$cookies.get("user")}`
-    );
+  async mounted() {
+    if (this.$cookies.get("user")) {
+      this.user = await fetch(
+        `${this.$config.apiUrl}/api/users/${this.$cookies.get("user")}`
+      ).then(res => res.json());
+    }
   },
   methods: {
     async inscribirse(e) {

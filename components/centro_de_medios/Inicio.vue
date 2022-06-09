@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="pb-20">
     <v-container class="grid grid-cols-12 lg:gap-x-20 py-4">
-      <div class="flex flex-col col-span-12 lg:col-span-2">
+      <div :class="`flex flex-col ${col_span_side}`">
         <div>
           <v-text-field
             outlined
@@ -69,7 +69,9 @@
           >
             <div v-for="(formato, index) in formatos" :key="index">
               <div
-                @click="filtarContenidosFormato(index, formato.attributes.nombre)"
+                @click="
+                  filtarContenidosFormato(index, formato.attributes.nombre)
+                "
                 class="
                   py-3
                   flex
@@ -92,7 +94,7 @@
         </div>
       </div>
 
-      <div class="col-span-12 lg:col-span-10">
+      <div :class="`${col_span_medios}`">
         <div
           class="flex lg:flex-row lg:items-center flex-col cursor-pointer"
           v-if="lastContenido"
@@ -130,28 +132,22 @@
 
               <!-- [IMAGES] -->
               <div v-if="lastContenido.attributes.archivo.es_imagen">
+                
+                <CoolLightBox
+                  :items="[`${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`]"
+                  :index="index"
+                  @close="index = null"
+                >
+                </CoolLightBox>
+
                 <v-img
-                  @click="showImage = true"
+                 v-for="(imagen, imagenIndex) in [`${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`]" :key="imagenIndex"
+                  @click="index = imagenIndex"
                   width="600"
                   height="300"
                   class="rounded-lg shadow-xl"
-                  :src="`${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`"
+                  :src="imagen"
                 ></v-img>
-
-                <v-overlay :value="showImage">
-                  <div class="flex align-start">
-                    <v-img
-                      v-if="lastContenido.attributes.archivo.es_imagen"
-                      width="100%"
-                      height="100%"
-                      class="rounded-lg shadow-xl"
-                      :src="`${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`"
-                    ></v-img>
-                    <v-icon @click="showImage = false" class="ml-4"
-                      >mdi-window-close</v-icon
-                    >
-                  </div>
-                </v-overlay>
               </div>
               <!-- [IMAGES] -->
             </div>
@@ -266,11 +262,14 @@
 
 <script>
 import { Youtube } from "vue-youtube";
+import CoolLightBox from "vue-cool-lightbox";
+import "vue-cool-lightbox/dist/vue-cool-lightbox.min.css";
 
 export default {
-  components: { Youtube },
+  components: { Youtube, CoolLightBox },
   data() {
     return {
+      index: null,
       search: "",
       tab: -1,
       tab_formatos: -1,
@@ -430,14 +429,65 @@ export default {
       return this.$store.getters["contenidos/getClases"](this.contenidos);
     },
     width() {
-      switch(this.$vuetify.breakpoint.name) {
-        case 'xs': return 320
-          case 'sm': return 340
-          case 'md': return 600
-          case 'lg': return 600
-          case 'xl': return 600
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return 320;
+        case "sm":
+          return 340;
+        case "md":
+          return 600;
+        case "lg":
+          return 600;
+        case "xl":
+          return 600;
       }
-    }
+    },
+    height() {
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return 500;
+        case "sm":
+          return 500;
+        case "md":
+          return 500;
+        case "lg":
+          return 900;
+        case "xl":
+          return 900;
+      }
+    },
+    col_span_side() {
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return "col-span-2";
+        case "sm":
+          return "col-span-12";
+        case "md":
+          return "col-span-4";
+        case "lg":
+          return "col-span-3";
+        case "xl":
+          return "col-span-2";
+        default:
+          return "col-span-4";
+      }
+    },
+    col_span_medios() {
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return "col-span-12";
+        case "sm":
+          return "col-span-12";
+        case "md":
+          return "col-span-12";
+        case "lg":
+          return "col-span-8";
+        case "xl":
+          return "col-span-9";
+        default:
+          return "col-span-4";
+      }
+    },
   },
 };
 </script>

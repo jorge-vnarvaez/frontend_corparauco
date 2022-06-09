@@ -9,7 +9,7 @@
           >
 
           <div class="flex flex-col">
-            <span class="flex justify-between"
+            <span class="flex justify-between" v-if="usuario.rut"
               ><span class="font-bold">Rut / Run:</span> {{ usuario.rut }}</span
             >
             <span class="flex justify-between"
@@ -24,14 +24,14 @@
               ><span class="font-bold">Apellido materno:</span>
               {{ usuario.apellidoMaterno }}</span
             >
-            <span class="flex justify-between"
+            <span class="flex justify-between" v-if="usuario.region"
               ><span class="font-bold">Región:</span> {{ usuario.region }}</span
             >
-            <span class="flex justify-between"
+            <span class="flex justify-between" v-if="usuario.provincia"
               ><span class="font-bold">Provincia:</span>
               {{ usuario.provincia }}</span
             >
-            <span class="flex justify-between"
+            <span class="flex justify-between" v-if="usuario.comuna"
               ><span class="font-bold">Comuna:</span> {{ usuario.comuna }}</span
             >
             <span class="flex justify-between"
@@ -67,7 +67,8 @@
       class="text-xl"
     >
       Estimado/a {{ usuario.nombre }} te haz inscrito al evento
-      <span class="font-bold">{{ evento.attributes.title }}</span> exitosamente!
+      <span class="font-bold">{{ evento.attributes.titulo }}</span>
+      exitosamente!
 
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbarExito = false">
@@ -76,11 +77,17 @@
       </template>
     </v-snackbar>
 
-    <v-snackbar v-model="snackbarError" :timeout="10000" color="red" centered class="text-xl">
+    <v-snackbar
+      v-model="snackbarError"
+      :timeout="10000"
+      color="red"
+      centered
+      class="text-xl"
+    >
       Estimado/a {{ usuario.nombre }} de acuerdo a nuestros registros, ya estas
       inscrito al evento
-      <span class="font-bold">{{ evento.attributes.title }}</span> por lo que no
-      procesaremos tu solicitud actual, si piensas que esto se trata de un
+      <span class="font-bold">{{ evento.attributes.titulo }}</span> por lo que
+      no procesaremos tu solicitud actual, si piensas que esto se trata de un
       malentendido te invitamos a
       <nuxt-link :to="{ name: 'contacto' }"
         ><span class="font-bold text-white">contactarte</span></nuxt-link
@@ -112,9 +119,13 @@ export default {
       let lastInscripciones = this.evento.attributes.inscripciones;
 
       if (
-        lastInscripciones.find(
-          (inscripcion) => inscripcion.rut == this.usuario.rut
-        )
+        this.usuario.rut != null
+          ? lastInscripciones.find(
+              (inscripcion) => inscripcion.rut == this.usuario.rut
+            )
+          : lastInscripciones.find(
+              (inscripcion) => inscripcion.email == this.usuario.email
+            )
       ) {
         this.dialogConfirmar = false;
         this.snackbarError = true;
@@ -130,6 +141,7 @@ export default {
                     this.usuario.apellidoPaterno +
                     " " +
                     this.usuario.apellidoMaterno,
+                  pais: this.usuario.pais,
                   region: this.usuario.region,
                   provincia: this.usuario.provincia,
                   comuna: this.usuario.comuna,
@@ -139,10 +151,21 @@ export default {
               ]),
             },
           })
-          .then((res) => {
-            this.dialogConfirmar = false;
-            this.snackbarExito = true;
+          .then(async () => {
+            if (this.$cookies.get("user")) {
+              await this.$axios.put(
+                `${this.$config.apiUrl}/api/users/${this.$cookies.get("user")}`,
+                {
+                  eventos: [this.evento.id],
+                }
+              );
+            }
+
+              this.dialogConfirmar = false;
+             this.snackbarExito = true;
           });
+
+      
       }
     },
   },

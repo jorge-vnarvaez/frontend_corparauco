@@ -9,7 +9,7 @@
       <v-card class="py-4">
         <v-card-title>
           <span class="text-2xl font-bold"
-            >{{ evento.attributes.title }} - Formulario de inscripción.</span
+            >{{ evento.attributes.titulo }} - Formulario de inscripción.</span
           >
           <span class="text-lg text-gray-700 mt-6 font-extralight"
             >Completa el siguiente formulario para inscribirte al evento.</span
@@ -20,10 +20,23 @@
             <v-form v-model="validado" lazy-validation ref="formulario">
               <v-row>
                 <v-col cols="12" sm="6" md="4">
+               <v-select
+                  class="mt-2"
+                  :items="paises"
+                  item-text="nombre"
+                  item-value="nombre"
+                  v-model="pais"
+                  :rules="reglaNotNull"
+                  required
+                >
+                </v-select
+              >
+                </v-col>
+                <v-col cols="12" sm="6" md="4" v-show="is_chile">
                   <v-text-field
                     v-model="usuario.rut"
                     label="Rut / Run*"
-                    :rules="reglaRut"
+                    :rules="is_chile ? reglaRut : []"
                     required
                   ></v-text-field>
                 </v-col>
@@ -51,35 +64,35 @@
                     required
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6" v-if="regiones">
+                <v-col cols="12" sm="4" v-show="is_chile"  v-if="regiones">
                   <v-select
                     :items="regiones"
                     item-text="nombre"
                     item-value="codigo"
-                    :rules="reglaNotNull"
+                    :rules="is_chile ? reglaNotNull : []"
                     label="Región*"
                     v-model="codigoRegion"
                   ></v-select>
                 </v-col>
-                <v-col cols="12" sm="4" v-if="provincias">
+                <v-col cols="12" sm="4" v-show="is_chile" v-if="provincias">
                   <v-select
                     :items="provincias"
                     item-text="nombre"
                     item-value="codigo"
                     no-data-text="Debe seleccionar la región"
-                    :rules="reglaNotNull"
+                    :rules="is_chile ? reglaNotNull : []"
                     label="Provincia*"
                     v-model="codigoProvincia"
                   ></v-select>
                 </v-col>
-                <v-col cols="12" sm="4" v-if="comunas">
+                <v-col cols="12" sm="4" v-show="is_chile" v-if="comunas">
                   <v-select
                     :items="comunas"
                     item-text="nombre"
                     item-value="codigo"
                     no-data-text="Debe seleccionar la provincia"
                     label="Comuna*"
-                    :rules="reglaNotNull"
+                    :rules="is_chile ? reglaNotNull : []"
                     v-model="codigoComuna"
                   ></v-select>
                 </v-col>
@@ -144,6 +157,8 @@ export default {
   props: ["eventDefault", "eventDisabled", "regiones"],
   data() {
     return {
+      is_chile: true,
+      pais: 'Chile',
       evento: this.eventDefault,
       codigoRegion: null,
       provincias: null,
@@ -154,12 +169,14 @@ export default {
       dialogConfirmar: false,
       validado: false,
       usuario: {
+        id: null,
         rut: null,
         nombre: null,
         apellidoPaterno: null,
         apellidoMaterno: null,
         email: null,
         telefono: null,
+        pais: null,
         region: null,
         provincia: null,
         comuna: null,
@@ -181,6 +198,9 @@ export default {
     };
   },
   watch: {
+    pais: function(pais) {
+      this.seleccionarPais(pais);
+    },
     codigoRegion: function (codigoNuevo, codigoAntiguo) {
       this.seleccionarProvincias(codigoNuevo);
       this.usuario.region = this.$store.getters['ui/getRegion'](codigoNuevo);
@@ -201,6 +221,9 @@ export default {
         this.dialogConfirmar = true;
       }
     },
+    seleccionarPais(pais) {
+      this.is_chile = pais == "Chile" ? true : false;
+    },
     seleccionarProvincias(codigo) {
       this.provincias = this.$store.getters['ui/getProvincias'](codigo);
     },
@@ -212,6 +235,11 @@ export default {
       this.dialog = false;
     },
   },
+  computed: {
+    paises() {
+      return this.$store.getters['ui/getPaises'];
+    }
+  }
 };
 </script>
 
