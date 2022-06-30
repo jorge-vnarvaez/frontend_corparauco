@@ -2221,6 +2221,19 @@
   "resolved" "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz"
   "version" "1.0.2"
 
+"animated-number-vue@^1.0.0":
+  "integrity" "sha512-dlwtF3g9bls5IGH+2Xxtey+kZLQZcLKu/lBp3FZVrnq0FRoIGNGs1AcFegBgLuW6aEdLx8PxaHB++hxuEfT+Tg=="
+  "resolved" "https://registry.npmjs.org/animated-number-vue/-/animated-number-vue-1.0.0.tgz"
+  "version" "1.0.0"
+  dependencies:
+    "animejs" "^2.2.0"
+    "vue" "^2.5.13"
+
+"animejs@^2.2.0":
+  "integrity" "sha512-suPqfRapTDhrfwxg1El8LlGz6qVGwoandR2uRQLQBxXavxkpIr9Uv2kNGrJIF7oa001jSxS5rRIXPHryKIshJg=="
+  "resolved" "https://registry.npmjs.org/animejs/-/animejs-2.2.0.tgz"
+  "version" "2.2.0"
+
 "ansi-align@^3.0.0":
   "integrity" "sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w=="
   "resolved" "https://registry.npmjs.org/ansi-align/-/ansi-align-3.0.1.tgz"
@@ -9710,7 +9723,7 @@
     "get-youtube-id" "^1.0.0"
     "youtube-player" "^5.4.0"
 
-"vue@^2.0.0", "vue@^2.3.0", "vue@^2.6.10", "vue@^2.6.12", "vue@^2.6.14", "vue@^2.6.4":
+"vue@^2.0.0", "vue@^2.3.0", "vue@^2.5.13", "vue@^2.6.10", "vue@^2.6.12", "vue@^2.6.14", "vue@^2.6.4":
   "integrity" "sha512-x2284lgYvjOMj3Za7kqzRcUSxBboHqtgRE2zlos1qWaOye5yUmHn42LB1250NJBLRwEcdrB0JRwyPTEPhfQjiQ=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-2.6.14.tgz"
   "version" "2.6.14"

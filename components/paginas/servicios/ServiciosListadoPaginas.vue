@@ -82,6 +82,11 @@
               </p></nuxt-link
             ></v-list-item-title
           >
+          <nuxt-link :to="{ name: 'centro_de_medios' }" class="my-4">
+            <p @click="showMenu" class="text-gray-500 my-0 text-xs">
+              Centro de medios
+            </p></nuxt-link
+          >
         </div>
       </div>
     </div>
@@ -90,6 +95,9 @@
 
 <script>
 export default {
+  async fetch() {
+    await this.$store.dispatch("paginas/servicios/loadPaginas");
+  },
   data() {
     return {
       on_hover: false,
@@ -100,9 +108,9 @@ export default {
     toggleNavbar: function () {
       this.showOptions = !this.showOptions;
     },
-    showMenu: function() {
-        this.$store.dispatch('ui/toggleMenu');
-    }
+    showMenu: function () {
+      this.$store.dispatch("ui/toggleMenu");
+    },
   },
   computed: {
     paginas() {

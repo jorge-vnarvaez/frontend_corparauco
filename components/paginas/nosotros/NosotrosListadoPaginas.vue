@@ -75,6 +75,10 @@
 
 <script>
 export default {
+  async fetch() {
+    await this.$store.dispatch('paginas/nosotros/loadPaginas');
+    await this.$store.dispatch('paginas/nosotros/loadDirectorio');
+  },
   data() {
     return {
       showOptions: false,

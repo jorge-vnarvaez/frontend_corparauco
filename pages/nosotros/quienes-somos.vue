@@ -48,7 +48,12 @@
               ></v-img>
             </div>
             <div class="mt-6 mb-4 text-gray-700">
-              <span class="text-4xl font-black">+30</span
+              <span class="text-4xl font-black">+<animated-number
+                :value="30"
+                :duration="2500"
+                :formatValue="formatearValor"
+                :delay="10"
+          /></span
               ><span class="d-inline-flex ml-2 lg:text-3xl text-xl"
                 >años de experiencia</span
               >
@@ -76,7 +81,12 @@
             "
           >
             <p>
-              <span class="text-4xl font-black">50</span
+              <span class="text-4xl font-black"><animated-number
+                :value="50"
+                :duration="2500"
+                :formatValue="formatearValor"
+                :delay="10"
+          /></span
               ><span class="d-inline-flex ml-2 lg:text-3xl text-xl"
                 >socios activos</span
               >
@@ -181,8 +191,16 @@
 </template>
 
 <script>
+import AnimatedNumber from "animated-number-vue";
+
 export default {
   layouts: "default",
+  components: { AnimatedNumber },
+  methods: {
+    formatearValor(valor) {
+      return parseInt(valor);
+    }
+  },
   computed: {
     pagina() {
       return this.$store.getters["paginas/nosotros/getPagina"]("quienes-somos");

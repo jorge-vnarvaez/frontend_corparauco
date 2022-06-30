@@ -61,7 +61,7 @@ export default {
 
     const programa = await context.$axios
       .$get(
-        `${context.$config.apiUrl}/api/programas/${context.params.id}?${query}`
+        `${context.$config.apiUrl}/api/programas/${context.params.slug}?${query}`
       )
       .then((res) => res.data);
     return { programa };

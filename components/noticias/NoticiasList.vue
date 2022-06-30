@@ -4,7 +4,7 @@
       <div class="grid grid-cols-12 flex py-16 align-center">
         <nuxt-link
           v-if="ultimaNoticia"
-          :to="{ name: 'noticias-id', params: { id: ultimaNoticia.id } }"
+          :to="{ name: 'noticias-slug', params: { slug: ultimaNoticia.attributes.slug } }"
           class="
             flex flex-col
             hover:shadow-sm
@@ -46,7 +46,7 @@
         </nuxt-link>
       </div>
 
-      <div
+      <!-- <div
         class="grid grid-cols-12 mt-8 gap-y-12 sm:mb-0 lg:mb-24"
         v-if="noticias"
       >
@@ -60,7 +60,7 @@
             ${col_span}
           `"
         >
-          <nuxt-link :to="{ name: 'noticias-id', params: { id: noticia.id } }">
+          <nuxt-link :to="{ name: 'noticias-slug', params: { slug: noticia.attributes.slug } }">
             <v-img
               v-if="noticia.attributes.imagen_referencia.data"
               class="h-96 rounded-2xl"
@@ -91,7 +91,7 @@
             </div>
           </nuxt-link>
         </div>
-      </div>
+      </div> -->
     </v-container>
   </div>
 </template>

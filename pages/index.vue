@@ -55,7 +55,7 @@
           >
             <!-- article - start -->
             <nuxt-link
-              :to="{ name: 'noticias-id', params: { id: noticia.id } }"
+              :to="{ name: 'noticias-slug', params: { slug: noticia.attributes.slug } }"
               class="
                 group
                 lg:h-48
@@ -323,6 +323,9 @@
 export default {
   layouts: "default",
   name: "IndexPage",
+  async asyncData(context) {
+    await context.store.dispatch('paginas/inicio/loadPagina');
+  },
   data() {
     return {
       session: null,

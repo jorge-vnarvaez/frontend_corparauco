@@ -20,36 +20,52 @@
           </p>
 
           <div class="flex flex-col space-y-16">
-            <div
-              v-if="
+
+            <!-- Por alguna razon el populate no trae esta relacion -->
+
+            <!-- v-if="
                 emprendedor.attributes.usuarios.data.length > 0 ||
                 emprendedor.attributes.emprendedores.length > 0
-              "
-            >
-              <p class="text-2xl lg:text-4xl font-bold mb-8">Emprendedores</p>
-              <div class="flex">
-                <div
-                  v-for="(
+              " -->
+
+            <!-- v-for="(
                     persona, index
                   ) in emprendedor.attributes.emprendedores.concat(
                     emprendedor.attributes.usuarios.data.map(
                       (usuario) => usuario.attributes
                     )
-                  )"
+                  )" -->
+            <div v-if="emprendedor.attributes.emprendedores.length > 0">
+              <p class="text-2xl lg:text-4xl font-bold mb-8">Emprendedores</p>
+              <div class="flex">
+                <div
+                  v-for="(
+                    persona, index
+                  ) in emprendedor.attributes.emprendedores
+                  "
                   :key="index"
                   class="w-24 h-24 mx-4"
                 >
-                  <v-img
-                    v-if="persona.foto_perfil.data"
-                    :src="`${$config.apiUrl}${persona.foto_perfil.data.attributes.url}`"
-                    class="w-24 h-24 rounded-full"
-                  ></v-img>
+                  <nuxt-link
+                    :to="{
+                      name: 'emprendedores-emprendedor-id',
+                      params: {
+                        id: { empresa: emprendedor.attributes.slug, persona: persona.id },
+                      },
+                    }"
+                  >
+                    <v-img
+                      v-if="persona.foto_perfil.data"
+                      :src="`${$config.apiUrl}${persona.foto_perfil.data.attributes.url}`"
+                      class="w-24 h-24 rounded-full"
+                    ></v-img>
 
-                  <v-img
-                    v-if="!persona.foto_perfil.data"
-                    src="/profileplaceholder.png"
-                    class="w-24 h-24 rounded-full"
-                  ></v-img>
+                    <v-img
+                      v-if="!persona.foto_perfil.data"
+                      src="/profileplaceholder.png"
+                      class="w-24 h-24 rounded-full"
+                    ></v-img>
+                  </nuxt-link>
                 </div>
               </div>
             </div>
@@ -157,7 +173,7 @@
               :key="index"
               class="mt-12"
             >
-              <div v-if="servicio.galeria.data">
+              <div v-if="servicio.galeria.data.length > 0">
                 <div v-if="servicio.galeria.data.length == 1">
                   <v-img
                     :width="width"
@@ -202,9 +218,9 @@
               </div>
 
               <div v-else class="flex flex-wrap rounded-lg">
-                  <div class="text-white flex align-center font-bold text-xl">
-                    {{ servicio.nombre }}
-                  </div>
+                <div class="text-white flex align-center font-bold text-xl">
+                  {{ servicio.nombre }}
+                </div>
               </div>
             </div>
           </div>
@@ -224,8 +240,8 @@ export default {
         "logo",
         "galeria",
         "imagen_referencia",
-        "usuarios",
-        "usuarios.foto_perfil",
+        // "usuarios",
+        // "usuarios.foto_perfil",
         "servicios",
         "servicios.galeria",
         "emprendedores",
@@ -235,7 +251,7 @@ export default {
 
     const emprendedor = await context.$axios
       .$get(
-        `${context.$config.apiUrl}/api/empresas/${context.params.id}?${query}`
+        `${context.$config.apiUrl}/api/empresas/${context.params.slug}?${query}`
       )
       .then((res) => res.data);
 
@@ -245,13 +261,18 @@ export default {
     has_image() {
       return (image) => (image != null ? true : false);
     },
-     width() {
-      switch(this.$vuetify.breakpoint.name) {
-        case 'xs': return 320
-          case 'sm': return 340
-          case 'md': return 600
-          case 'lg': return 600
-          case 'xl': return 600
+    width() {
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return 320;
+        case "sm":
+          return 340;
+        case "md":
+          return 600;
+        case "lg":
+          return 600;
+        case "xl":
+          return 600;
       }
     },
   },

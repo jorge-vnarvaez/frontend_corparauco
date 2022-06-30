@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white py-6 sm:py-8 lg:py-12" v-if="noticia">
-    <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
+     <div class="max-w-screen-lg px-4 md:px-8 mx-auto">
       <h1
         class="
           text-gray-800 text-2xl
@@ -58,8 +58,8 @@ export default {
       return (text) => marked(text);
     },
     noticia() {
-      const id = this.$route.params.id;
-      return this.$store.getters["noticias/getNoticia"](id);
+      const slug = this.$route.params.slug;
+      return this.$store.getters["noticias/getNoticia"](slug);
     },
   },
 };

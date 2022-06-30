@@ -22,7 +22,7 @@
 
         <nuxt-link
           v-if="ultimoEvento"
-          :to="{ name: 'eventos-id', params: { id: ultimoEvento.id } }"
+          :to="{ name: 'eventos-slug', params: { slug: ultimoEvento.attributes.slug } }"
           class="
             flex flex-col
             hover:shadow-sm
@@ -107,7 +107,7 @@
             ${col_span}
           `"
         >
-          <nuxt-link :to="{ name: 'eventos-id', params: { id: evento.id } }">
+          <nuxt-link :to="{ name: 'eventos-slug', params: { slug: evento.attributes.slug } }">
             <v-img
               v-if="evento.attributes.imagen_referencia.data"
               class="h-96 rounded-2xl"

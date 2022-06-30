@@ -459,7 +459,7 @@ export default {
     col_span_side() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
-          return "col-span-2";
+          return "col-span-12";
         case "sm":
           return "col-span-12";
         case "md":

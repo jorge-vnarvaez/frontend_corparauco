@@ -70,11 +70,16 @@
       v-if="pagina.indicadores"
     >
       <div v-for="indicador in pagina.indicadores" :key="indicador.id">
-        <p class="text-3xl text-blue-800 font-black mb-6">
+        <p class="text-3xl text-blue-800 font-black text-center">
           {{ indicador.titulo }}
         </p>
-        <p class="text-5xl font-bold mb-0 text-gray-700">
-          {{ indicador.valor }}
+        <p class="text-5xl font-bold mb-0 text-gray-700 text-center">
+          <animated-number
+            :value="indicador.valor"
+            :duration="2500"
+            :formatValue="formatearValor"
+            :delay="10"
+          />
         </p>
         <span class="ml-2 text-2xl font-thin text-gray-600">{{
           indicador.subtitulo
@@ -143,7 +148,26 @@
 </template>
 
 <script>
+import AnimatedNumber from "animated-number-vue";
+
 export default {
+  components: {
+    AnimatedNumber,
+  },
+  async asyncData(context) {
+    await context.store.dispatch('paginas/emprendedores/loadTestimonios');
+    await context.store.dispatch('organizaciones/loadOrganizaciones');
+  },
+  data() {
+    return {
+      value: 10000,
+    };
+  },
+  methods: {
+    formatearValor(valor) {
+      return parseInt(valor);
+    }
+  },
   computed: {
     pagina() {
       return this.$store.getters["paginas/emprendedores/getPaginaTestimonios"];

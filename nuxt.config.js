@@ -100,5 +100,7 @@ export default {
     Raleway: true,
     Poppins: true,
     Inter: true,
-  }
+  },
+
+  devServerHandlers: [],
 }

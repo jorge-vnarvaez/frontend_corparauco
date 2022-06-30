@@ -2,11 +2,29 @@
   <div class="w-full" v-if="pagina">
     <div class="bg-gradient-to-b from-blue-800 to-blue-600 h-96"></div>
     <div class="max-w-5xl mx-auto px-6 sm:px-6 lg:px-8 mb-12">
-      <div class="bg-white w-full shadow rounded p-8 sm:p-12 -mt-72" v-if="pagina.header">
-        <p class="lg:text-5xl text-2xl font-bold leading-7 text-center text-gray-700">{{ pagina.header.titulo }}</p>
+      <div
+        class="bg-white w-full shadow rounded p-8 sm:p-12 -mt-72"
+        v-if="pagina.header"
+      >
+        <p
+          class="
+            lg:text-5xl
+            text-2xl
+            font-bold
+            leading-7
+            text-center text-gray-700
+          "
+        >
+          {{ pagina.header.titulo }}
+        </p>
 
-        <div v-if="pagina.body" class="w-full text-center flex justify-center my-12">
-          <p class="lg:w-7/12 w-full text-xl leading-loose text-gray-600">{{ pagina.body.texto }}</p>
+        <div
+          v-if="pagina.body"
+          class="w-full text-center flex justify-center my-12"
+        >
+          <p class="lg:w-7/12 w-full text-xl leading-loose text-gray-600">
+            {{ pagina.body.texto }}
+          </p>
         </div>
         <v-form
           v-model="validado"
@@ -77,7 +95,9 @@
           </div>
           <div>
             <div class="w-full flex flex-col mt-4">
-              <label class="font-semibold leading-none">Solicitud <span class="text-red-500">*</span></label>
+              <label class="font-semibold leading-none"
+                >Solicitud <span class="text-red-500">*</span></label
+              >
               <v-textarea
                 background-color="grey lighten-4"
                 counter
@@ -115,6 +135,9 @@
 
 <script>
 export default {
+  async asyncData(context) {
+    await context.store.dispatch("paginas/contacto/loadPagina");
+  },
   data() {
     return {
       validado: false,
@@ -129,9 +152,7 @@ export default {
         (v) => !!v || "Este campo es obligatorio",
         (v) => /[0-9]/.test(v) || "El teléfono solo debe contener números",
       ],
-      reglaSolicitud: [
-        (v) => !!v || "Debe indicar el tipo de solicitud"
-      ],
+      reglaSolicitud: [(v) => !!v || "Debe indicar el tipo de solicitud"],
       reglaEmail: [
         (v) => !!v || "Este campo es obligatorio",
         (v) =>

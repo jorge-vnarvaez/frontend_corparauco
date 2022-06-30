@@ -12,7 +12,7 @@ import BarraNavegacion from './BarraNavegacion.vue'
 import FooterSection from "../layouts/FooterSection.vue";
 
 export default {
-    components: { BarraNavegacion, FooterSection }
+    components: { BarraNavegacion, FooterSection },
 }
 
 

@@ -120,7 +120,7 @@
             <nuxt-link
               v-for="programa in pagina.programas.data"
               :key="programa.id"
-              :to="{ name: 'programas-id', params: { id: programa.id } }"
+              :to="{ name: 'programas-slug', params: { slug: programa.attributes.slug } }"
               class="
                 flex flex-col
                 justify-between

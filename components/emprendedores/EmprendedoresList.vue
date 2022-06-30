@@ -16,7 +16,7 @@
         border-gray-50
         hover:shadow-md hover:border hover:border-gray-50
       `"
-      :to="{ name: 'emprendedores-id', params: { id: empresa.id } }"
+      :to="{ name: 'emprendedores-slug', params: { slug: empresa.attributes.slug } }"
     >
       <v-img
         v-if="empresa.attributes.imagen_referencia.data"

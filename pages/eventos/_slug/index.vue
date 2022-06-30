@@ -4,8 +4,8 @@
       class="bg-blue-800 text-white"
       v-if="
         is_finished(
-          evento.data.attributes.fecha_inicio,
-          evento.data.attributes.fecha_termino
+          evento.attributes.fecha_inicio,
+          evento.attributes.fecha_termino
         )
       "
     >
@@ -23,24 +23,24 @@
       class="py-16 px-4 lg:py-20"
       gradient="to top right, rgba(14, 116, 144,.44), rgba(25,32,72,.55)"
       :src="`${
-        evento.data.attributes.imagen_referencia.data
-          ? `${$config.apiUrl}${evento.data.attributes.imagen_referencia.data.attributes.url}`
+        evento.attributes.imagen_referencia.data
+          ? `${$config.apiUrl}${evento.attributes.imagen_referencia.data.attributes.url}`
           : ''
       }`"
     >
       <div class="mx-auto max-w-screen-xl grid grid-cols-12 gap-x-8">
         <div class="col-span-10 lg:col-span-5 text-white">
           <p class="text-4xl lg:text-5xl font-bold leading-snug">
-            {{ evento.data.attributes.titulo }}
+            {{ evento.attributes.titulo }}
           </p>
 
           <v-chip label color="teal" class="mt-2 lg:mt-0">
             <div class="text-white font-bold">
-              <span v-if="evento.data.attributes.requiere_inscripcion"
+              <span v-if="evento.attributes.requiere_inscripcion"
                 ><v-icon class="mr-2">mdi-cellphone-information</v-icon>Requiere
                 inscripción</span
               >
-              <span v-if="!evento.data.attributes.requiere_inscripcion"
+              <span v-if="!evento.attributes.requiere_inscripcion"
                 >Evento público</span
               >
             </div>
@@ -49,7 +49,7 @@
             label
             color="green darken-1"
             class="mt-2 lg:mt-0"
-            v-if="evento.data.attributes.pase_movilidad"
+            v-if="evento.attributes.pase_movilidad"
           >
             <div class="text-white font-bold">
               <v-icon class="mr-2">mdi-qrcode-scan</v-icon
@@ -64,9 +64,9 @@
               class="mt-2 lg:mt-0"
               v-if="
                 !is_finished(
-                  evento.data.attributes.fecha_inicio,
-                  evento.data.attributes.fecha_termino
-                ) && !evento.data.attributes.es_publico
+                  evento.attributes.fecha_inicio,
+                  evento.attributes.fecha_termino
+                ) && !evento.attributes.es_publico
               "
             >
               <v-icon class="mr-2"> mdi-account-multiple-plus </v-icon>
@@ -74,14 +74,14 @@
             </v-chip>
           </div>
 
-          <div v-if="evento.data.attributes.calendario">
+          <div v-if="evento.attributes.calendario">
             <div class="flex items-center mb-4">
               <v-icon color="white" large>mdi-calendar-outline</v-icon>
               <p class="font-bold mb-0 text-xl ml-3">Calendario</p>
             </div>
             <div
               class="flex items-center"
-              v-for="fecha in evento.data.attributes.calendario"
+              v-for="fecha in evento.attributes.calendario"
               :key="fecha.id"
             >
               <p class="normal-case text-xl mb-0 font-light">
@@ -90,34 +90,29 @@
             </div>
           </div>
 
-          <div v-if="evento.data.attributes.ubicacion" class="my-6">
+          <div v-if="evento.attributes.ubicacion" class="my-6">
             <div class="flex items-center">
               <v-icon color="white" large>mdi-map-marker-outline</v-icon>
               <p class="font-bold mb-0 text-xl ml-3">
                 Ubicación:
                 <span class="text-xl mb-0 font-light">
-                  {{ evento.data.attributes.ubicacion }}
+                  {{ evento.attributes.ubicacion }}
                 </span>
               </p>
             </div>
           </div>
         </div>
 
-        <div class="col-span-11 lg:col-span-7 bg-white rounded-lg pa-8 h-full">
-          <div v-if="evento.data.attributes.descripcion">
+        <div class="col-span-11 lg:col-span-7 bg-white rounded-lg pa-8">
+          <div v-if="evento.attributes.descripcion">
             <p class="text-3xl font-bold text-blue-800 mb-6">Descripción</p>
-            <span
-              v-html="markdownToHtml(evento.data.attributes.descripcion)"
-            ></span>
+            <span v-html="markdownToHtml(evento.attributes.descripcion)"></span>
           </div>
 
-          <div
-            v-if="evento.data.attributes.contenidos.length > 0"
-            class="mt-6 mb-8"
-          >
+          <div v-if="evento.attributes.contenidos.length > 0" class="mt-6 mb-8">
             <p class="text-3xl font-bold text-blue-800 my-6">Contenidos</p>
             <div
-              v-for="contenido in evento.data.attributes.contenidos"
+              v-for="contenido in evento.attributes.contenidos"
               :key="contenido.id"
             >
               <p class="uppercase text-sm mt-4">
@@ -142,16 +137,16 @@
           <div
             v-if="
               !is_finished(
-                evento.data.attributes.fecha_inicio,
-                evento.data.attributes.fecha_termino
+                evento.attributes.fecha_inicio,
+                evento.attributes.fecha_termino
               )
             "
           >
             <p class="text-3xl font-bold text-blue-800 my-6">Inscripciones</p>
-            <div v-if="evento.data.attributes.requiere_inscripcion">
-              <div v-if="evento.data.attributes.inscripciones_meta">
+            <div v-if="evento.attributes.requiere_inscripcion">
+              <div v-if="evento.attributes.inscripciones_meta">
                 <span
-                  v-html="evento.data.attributes.inscripciones_meta.excerpt"
+                  v-html="evento.attributes.inscripciones_meta.excerpt"
                   class="mb-8"
                 ></span>
               </div>
@@ -179,24 +174,24 @@
 
           <div
             v-if="
-              evento.data.attributes.transmision_vivo &&
-              evento.data.attributes.url_video_llamada
+              evento.attributes.transmision_vivo &&
+              evento.attributes.url_video_llamada
             "
           >
             <p class="text-3xl font-bold text-blue-800 my-6">
               <span
                 v-if="
                   !is_finished(
-                    evento.data.attributes.fecha_inicio,
-                    evento.data.attributes.fecha_termino
+                    evento.attributes.fecha_inicio,
+                    evento.attributes.fecha_termino
                   )
                 "
                 >Únete a la </span
               ><span
                 v-if="
                   is_finished(
-                    evento.data.attributes.fecha_inicio,
-                    evento.data.attributes.fecha_termino
+                    evento.attributes.fecha_inicio,
+                    evento.attributes.fecha_termino
                   )
                 "
                 >Revive a la </span
@@ -206,21 +201,19 @@
             <div
               v-if="
                 !is_finished(
-                  evento.data.attributes.fecha_inicio,
-                  evento.data.attributes.fecha_termino
+                  evento.attributes.fecha_inicio,
+                  evento.attributes.fecha_termino
                 ) &&
-                evento.data.attributes.transmision_vivo &&
-                evento.data.attributes.url_video_llamada
+                evento.attributes.transmision_vivo &&
+                evento.attributes.url_video_llamada
               "
             >
               <v-btn
-                v-if="evento.data.attributes.transmision_vivo"
+                v-if="evento.attributes.transmision_vivo"
                 color="amber darken-4"
                 depressed
                 outlined
-                ><a
-                  :href="evento.data.attributes.url_video_llamada"
-                  target="_blank"
+                ><a :href="evento.attributes.url_video_llamada" target="_blank"
                   ><v-icon class="mr-2" color="red darken-2" large
                     >mdi-video</v-icon
                   ><span class="text-white font-bold"
@@ -233,21 +226,19 @@
             <div
               v-if="
                 is_finished(
-                  evento.data.attributes.fecha_inicio,
-                  evento.data.attributes.fecha_termino
+                  evento.attributes.fecha_inicio,
+                  evento.attributes.fecha_termino
                 ) &&
-                evento.data.attributes.transmision_vivo &&
-                evento.data.attributes.url_video_llamada
+                evento.attributes.transmision_vivo &&
+                evento.attributes.url_video_llamada
               "
             >
               <v-btn
-                v-if="evento.data.attributes.transmision_vivo"
+                v-if="evento.attributes.transmision_vivo"
                 color="red darken-2"
                 depressed
                 outlined
-                ><a
-                  :href="evento.data.attributes.url_video_llamada"
-                  target="_blank"
+                ><a :href="evento.attributes.url_video_llamada" target="_blank"
                   ><v-icon class="mr-2" color="red darken-2" large
                     >mdi-video</v-icon
                   ><span class="text-white font-bold">Revivir evento</span></a
@@ -259,12 +250,14 @@
       </div>
     </v-img>
 
+
+
     <v-container
       v-if="
-        evento.data.attributes.galeria.length > 0 &&
+        evento.attributes.galeria.length > 0 &&
         is_finished(
-          evento.data.attributes.fecha_inicio,
-          evento.data.attributes.fecha_termino
+          evento.attributes.fecha_inicio,
+          evento.attributes.fecha_termino
         )
       "
     >
@@ -275,19 +268,19 @@
         <div
           class="col-span-12 lg:col-span-3"
           v-for="(imagen, imagenIndex) in concatenar_imagenes(
-            evento.data.attributes.galeria
+            evento.attributes.galeria
           )"
           :key="imagenIndex"
         >
           <CoolLightBox
-            :items="concatenar_imagenes(evento.data.attributes.galeria)"
+            :items="concatenar_imagenes(evento.attributes.galeria)"
             :index="index"
             @close="index = null"
           >
           </CoolLightBox>
 
           <v-img
-            class="rounded-lg"
+            class="rounded-lg cursor-pointer"
             @click="index = imagenIndex"
             :src="imagen"
           >
@@ -297,7 +290,7 @@
     </v-container>
 
     <div
-      v-if="evento.data.attributes.colaboradores.length > 0"
+      v-if="evento.attributes.colaboradores.length > 0"
       class="py-24 pb-48 mx-auto"
     >
       <p class="text-2xl lg:text-5xl font-bold text-center">
@@ -306,7 +299,7 @@
 
       <v-container class="grid grid-cols-12 lg:gap-x-8 gap-y-16 mt-24">
         <div
-          v-for="colaborador in evento.data.attributes.colaboradores"
+          v-for="colaborador in evento.attributes.colaboradores"
           :key="colaborador.id"
           class="col-span-12 lg:col-span-2 flex-items-center"
         >
@@ -330,19 +323,30 @@ import CoolLightBox from "vue-cool-lightbox";
 import "vue-cool-lightbox/dist/vue-cool-lightbox.min.css";
 
 export default {
+  components: { InscripcionForm, CoolLightBox },
+  async fetch() {
+    await this.$store.dispatch("ui/loadRegiones");
+    await this.$store.dispatch("ui/loadProvincias");
+    await this.$store.dispatch("ui/loadComunas");
+  },
   data() {
     return {
       index: null,
       data_imagenes: [],
     };
   },
-  components: { InscripcionForm, CoolLightBox },
   methods: {
     concatenar_imagenes(arreglos) {
-      const [arr1, arr2, arr3] = arreglos;
-      return arr1.imagenes.data
-        .concat(arr2.imagenes.data, arr3.imagenes.data)
-        .map((imagen) => this.$config.apiUrl + imagen.attributes.url);
+      const [...arrays] = arreglos;
+      const imagenes = [];
+      const img = [];
+      arrays.forEach((arreglo) => imagenes.push(arreglo.imagenes.data.map((imagen) => this.$config.apiUrl + imagen.attributes.url)));
+
+      imagenes.forEach((_imagenes) => {
+        _imagenes.map((_img) => img.push(_img));
+      });
+
+      return img;
     },
     is_finished(fecha_inicio, fecha_termino) {
       const date = new Date();
@@ -378,9 +382,11 @@ export default {
       ],
     });
 
-    const evento = await context.$axios.$get(
-      `${context.$config.apiUrl}/api/eventos/${context.params.id}?${query}`
-    );
+    const evento = await context.$axios
+      .$get(
+        `${context.$config.apiUrl}/api/eventos/${context.params.slug}?${query}`
+      )
+      .then((res) => res.data);
 
     return { evento };
   },

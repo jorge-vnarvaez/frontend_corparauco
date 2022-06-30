@@ -141,7 +141,7 @@
         space-y-8
         lg:space-y-0
       "
-      v-show="showMenu"
+      v-show="$vuetify.breakpoint.mobile ? showMenu : true"
     >
       <div
         :class="`
@@ -433,12 +433,6 @@ export default {
     },
     appLogo() {
       return this.$store.getters["paginas/inicio/getAppLogo"];
-    },
-    appName() {
-      return this.$store.getters["paginas/inicio/getAppName"];
-    },
-    appSubtitle() {
-      return this.$store.getters["paginas/inicio/getAppSubtitle"];
     },
     col_span() {
       switch (this.$vuetify.breakpoint.name) {

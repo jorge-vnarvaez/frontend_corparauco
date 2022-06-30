@@ -1976,5 +1976,5 @@ export default () => ({
     provincias: [],
     comunas: [],
     options: false,
-    menu: true,
+    menu: false,
 })
