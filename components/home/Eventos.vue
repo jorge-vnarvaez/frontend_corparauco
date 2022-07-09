@@ -35,22 +35,22 @@
             <span>Evento público</span>
           </div>
 
-          <div class="flex space-x-4">
+          <div class="flex flex-col space-x-4">
             <div
               v-if="!evento.attributes.is_public"
-              class="bg-emerald-700 px-4 rounded-full py-1 white--text text-sm"
+              class="bg-blue-600 px-4 py-1 white--text text-sm w-32 rounded-xl"
             >
               <span>Evento privado</span>
             </div>
 
             <div
               v-if="!evento.attributes.is_public"
-              class="bg-green-800 px-4 rounded-full py-1 white--text text-sm"
+              class="px-4 rounded-full py-1 white--text text-sm"
             >
               <span>Requiere inscripción</span>
             </div>
           </div>
-         <nuxt-link :to="{ name: 'eventos-id', params: { id: evento.id} }" target="_blank"><v-btn outlined> Ver página del evento <v-icon>mdi-arrow-top-right-thick</v-icon></v-btn></nuxt-link>
+         <!-- <nuxt-link :to="{ name: 'eventos-id', params: { id: evento.id} }" target="_blank"><v-btn outlined> Ver página del evento <v-icon>mdi-arrow-top-right-thick</v-icon></v-btn></nuxt-link> -->
         </div>
       </div>
     </div>

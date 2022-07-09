@@ -3,7 +3,7 @@
     <div class="grid grid-cols-12 gap-x-0 lg:gap-x-8 gap-y-8 lg:gap-y-8 mb-4">
       <empty-section
         v-if="eventosRecientes.length == 0"
-        class="col-span-11 lg:col-span-6"
+        class="col-span-12 lg:col-span-6"
         defaultIcon="mdi-calendar-blank-outline"
         defaultTitle="Lo sentimos"
         defaultLabel="No tenemos programado ningún evento para esta semana"

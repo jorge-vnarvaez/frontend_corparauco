@@ -31,8 +31,8 @@ export const getClases = (state) => (contenidos) => {
 };
 
 export const getNContenidos = (state) => (title) => {
-  return state.contenidos.map(function (contenido) {
+  return state.contenidos.length > 0 ? state.contenidos.map(function (contenido) {
     return contenido.attributes.organizadores.data.filter((organizador) => organizador.attributes.titulo == title).length;
-  }).reduce((total, n) => total + n);
+  }).reduce((total, n) => total + n) : 0;
 };
 

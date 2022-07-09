@@ -1,5 +1,7 @@
 <template>
-  <div class="pb-20">
+  <div
+    class="py-[15px] lg:py-[50px] px-2 bg-gradient-to-b from-slate-50 to-white"
+  >
     <v-container class="grid grid-cols-12 lg:gap-x-20 py-4">
       <div :class="`flex flex-col ${col_span_side}`">
         <div>
@@ -83,7 +85,16 @@
                 "
               >
                 <div class="flex justify-between">
-                  <span class="w-32">{{ formato.attributes.nombre }}</span>
+                  <span
+                    :class="
+                      `${
+                        tab_formatos == index
+                          ? 'text-blue-900 font-black'
+                          : 'text-neutral-900'
+                      }` + ' w-32'
+                    "
+                    >{{ formato.attributes.nombre }}</span
+                  >
                   <v-icon color="indigo darken-1 ml-8 lg:ml-0">{{
                     formato.attributes.icono
                   }}</v-icon>
@@ -94,9 +105,12 @@
         </div>
       </div>
 
-      <div :class="`${col_span_medios}`">
+      <div
+        :class="`${col_span_medios}`"
+        v-if="contenidos.length > 0 && lastContenido != null"
+      >
         <div
-          class="flex lg:flex-row lg:items-center flex-col cursor-pointer"
+          class="flex lg:flex-row lg:items-center flex-col"
           v-if="lastContenido"
         >
           <div v-if="lastContenido.attributes.archivo">
@@ -132,16 +146,20 @@
 
               <!-- [IMAGES] -->
               <div v-if="lastContenido.attributes.archivo.es_imagen">
-                
                 <CoolLightBox
-                  :items="[`${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`]"
+                  :items="[
+                    `${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`,
+                  ]"
                   :index="index"
                   @close="index = null"
                 >
                 </CoolLightBox>
 
                 <v-img
-                 v-for="(imagen, imagenIndex) in [`${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`]" :key="imagenIndex"
+                  v-for="(imagen, imagenIndex) in [
+                    `${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`,
+                  ]"
+                  :key="imagenIndex"
                   @click="index = imagenIndex"
                   width="600"
                   height="300"
@@ -166,20 +184,51 @@
           </div>
           <!-- [GUIAS Y CLASES WITHOUT FILE OR VIDEO] -->
 
-          <div class="lg:w-3/12 ml-8 lg:ml-0 mt-8 lg:mt-0">
-            <p class="text-4xl text-blue-800 font-black">
+          <!-- [INFO CONTENIDO] -->
+          <div
+            class="w-full lg:w-3/12 ml-[0px] lg:ml-[50px] mt-[50px] lg:mt-[0px]"
+          >
+            <p class="text-3xl text-blue-800 font-black">
               {{ lastContenido.attributes.titulo }}
             </p>
             <span class="text-blue-900">{{
               lastContenido.attributes.sumario
             }}</span>
+
+            <div v-if="lastContenido.attributes.archivo" class="mt-8">
+              <div
+                v-if="
+                  lastContenido.attributes.archivo.url_youtube &&
+                  lastContenido.attributes.archivo.archivo.data
+                "
+              >
+                <a
+                  class="
+                    flex
+                    align-center
+                    cursor-pointer
+                    space-x-2
+                    text-decoration-none
+                  "
+                  target="_blank"
+                  :href="`${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`"
+                  ><v-icon color="red darken-4" large>mdi-file-pdf-box</v-icon>
+                  <p class="mb-0 text-neutral-900 font-bold">
+                    Ver PDF adjunto
+                  </p></a
+                >
+              </div>
+            </div>
           </div>
+
+          <!-- [INFO CONTENIDO] -->
         </div>
 
+        <!-- [VIDEOS]-->
         <div class="mt-16" v-if="showVideos && videos.length > 0">
           <div class="flex mb-2">
-            <p class="font-bold text-lg mr-6 mb-0">Videos</p>
-            <v-icon color="indigo darken-1">mdi-arrow-right-drop-circle</v-icon>
+            <p class="font-bold text-lg mr-3 mb-0">Videos</p>
+            <v-icon color="indigo darken-1">mdi-youtube</v-icon>
           </div>
           <div class="flex space-x-8 no-scrollbar overflow-x-scroll">
             <div
@@ -203,7 +252,9 @@
             </div>
           </div>
         </div>
+        <!-- [VIDEOS]-->
 
+        <!-- [INFOGRAFIAS]-->
         <div class="mt-12" v-if="showInfografias && infografias.length > 0">
           <div class="flex mb-2">
             <p class="font-bold text-lg mr-6 mb-0">Infografías</p>
@@ -229,7 +280,9 @@
             </div>
           </div>
         </div>
+        <!-- [INFOGRAFIAS]-->
 
+        <!-- [CLASES]-->
         <div class="mt-12" v-if="showClases && clases.length > 0">
           <div class="flex mb-2">
             <p class="font-bold text-lg mr-6 mb-0">Guías y clases</p>
@@ -255,18 +308,35 @@
             </div>
           </div>
         </div>
+        <!-- [CLASES]-->
+
+        <!-- [CURSOS ]-->
+        <div class="mt-12">
+            <p class="font-bold text-3xl mr-6 mb-0">Nuestros cursos que tenemos para tí</p>
+
+            <cursos />
+        </div>
+        <!-- [CURSOS ]-->
+      </div>
+
+      <div v-if="contenidos.length == 0" class="col-span-9">
+        <p class="text-3xl text-blue-800 font-black">
+          No se encontraron resultados
+        </p>
       </div>
     </v-container>
   </div>
 </template>
 
 <script>
+
+import Cursos from './Cursos.vue';
 import { Youtube } from "vue-youtube";
 import CoolLightBox from "vue-cool-lightbox";
 import "vue-cool-lightbox/dist/vue-cool-lightbox.min.css";
 
 export default {
-  components: { Youtube, CoolLightBox },
+  components: { Cursos, Youtube, CoolLightBox },
   data() {
     return {
       index: null,
@@ -281,7 +351,7 @@ export default {
       showInfografias: true,
       contenidos: [],
       playerVars: {
-        controls: 0,
+        controls: 1,
       },
     };
   },
@@ -409,8 +479,11 @@ export default {
     },
   },
   mounted() {
-    this.lastContenido = this.$store.getters["contenidos/getLastContenido"];
     this.contenidos = this.$store.getters["contenidos/getContenidos"];
+
+    if (this.contenidos.length > 0) {
+      this.lastContenido = this.$store.getters["contenidos/getLastContenido"];
+    }
   },
   computed: {
     organizadores() {

@@ -20,7 +20,7 @@
         >
           <v-img
             v-if="ultimaNoticia.attributes.imagen_referencia.data"
-            height="40vh"
+            height="50vh"
             class="shadow-md rounded-xl"
             :src="`${$config.apiUrl}${ultimaNoticia.attributes.imagen_referencia.data.attributes.url}`"
           >
@@ -46,7 +46,7 @@
         </nuxt-link>
       </div>
 
-      <!-- <div
+      <div
         class="grid grid-cols-12 mt-8 gap-y-12 sm:mb-0 lg:mb-24"
         v-if="noticias"
       >
@@ -91,7 +91,7 @@
             </div>
           </nuxt-link>
         </div>
-      </div> -->
+      </div>
     </v-container>
   </div>
 </template>

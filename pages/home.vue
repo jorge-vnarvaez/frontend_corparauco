@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-gradient-to-b from-slate-50 to-white">
-    <v-container class="grid grid-cols-12 my-12 gap-x-8">
+  <div class="bg-gradient-to-b from-slate-50 to-white px-2">
+    <v-container class="grid grid-cols-12 my-12 lg:gap-x-8">
       <div
         class="
           overflow-x-scroll

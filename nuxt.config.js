@@ -4,10 +4,10 @@ const appEnv = process.env.NODE_ENV || 'development';
 
 export default {
   publicRuntimeConfig: {
-    apiUrl: 
-    appEnv === 'development'
-     ? 'http://localhost:1338'
-     : 'https://corecorparauco.uinn.cl'
+    apiUrl: 'https://corecorparauco.uinn.cl'
+    // appEnv === 'development'
+    //  ? 'http://localhost:1338'
+    //  : 'https://corecorparauco.uinn.cl'
   },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
