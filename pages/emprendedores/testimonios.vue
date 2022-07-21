@@ -1,5 +1,5 @@
 <template>
-  <div v-if="pagina">
+  <div v-if="pagina" class="bg-gradient-to-br from-green-200 to-white">
     <div v-if="pagina.header">
       <v-img
         v-if="pagina.header.imagen.data"
@@ -56,6 +56,7 @@
     </div>
 
     <v-container
+    
       class="
         my-48
         flex

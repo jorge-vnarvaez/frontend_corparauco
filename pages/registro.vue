@@ -324,7 +324,7 @@ export default {
               pais: this.pais,
             }
           ).then(res => {
-            this.$router.push('iniciar_sesion')
+            this.$router.push('registro_exitoso')
           });
         }
       }

@@ -3,5 +3,5 @@ export default () => ({
     is_logged: false,
     user: null,
     error: false,
-    errorMsg: 'Credenciales invalidas',
+    errorMsg: 'Email y/o contraseña inválidos',
 })

@@ -1,56 +1,36 @@
 <template>
   <nav
-    class="
-      container
-      w-full
-      mb-3
-      grid grid-cols-12
-      flex flex-col
-      space-y-8
-      lg:space-y-0
+    :class="
+      `${$vuetify.breakpoint.mobile ? '' : 'container'}` +
+      ' w-full mb-3 grid grid-cols-12 flex flex-col lg:space-y-0'
     "
   >
     <div
-      class="flex lg:flex-row flex-col items-center justify-between col-span-12"
+      class="flex lg:flex-row flex-col items-center col-span-12"
     >
-      <div class="flex justify-between col-span-6">
+      <!-- [Logo and Menu] -->
+      <div class="flex px-[30px] lg:px-[0px] col-span-4">
         <nuxt-link v-if="appLogo" to="/"
-          ><v-img class="w-64 h-28" :src="`${$config.apiUrl}${appLogo}`"></v-img
+          ><v-img
+            class="w-64 h-32"
+            contain
+            :src="`${$config.apiUrl}${appLogo}`"
+          ></v-img
         ></nuxt-link>
         <button
-          class="
-            text-white
-            cursor-pointer
-            text-xl
-            leading-none
-            px-3
-            py-1
-            border border-solid border-transparent
-            rounded
-            bg-transparent
-            md:block
-            lg:hidden
-            outline-none
-            focus:outline-none
-          "
+          class="text-white cursor-pointer text-xl leading-none py-1 border border-solid border-transparent rounded bg-transparent md:block lg:hidden outline-none focus:outline-none"
           type="button"
           v-on:click="showNavBar()"
         >
           <v-icon>mdi-menu</v-icon>
         </button>
       </div>
+      <!-- [Logo and Menu] -->
 
+      <!--[LOGIN DESKTOP]-->
       <div
         v-if="$vuetify.breakpoint.mobile ? false : true"
-        class="
-          flex flex-col
-          lg:flex-row
-          items-end
-          space-y-4
-          lg:space-y-0 lg:col-span-6
-          justify-end
-          col-span-12
-        "
+        class="flex flex-col lg:flex-row items-end space-y-4 lg:space-y-0 lg:col-span-6 justify-end col-span-12"
       >
         <v-btn
           v-if="userStatus == false"
@@ -63,55 +43,20 @@
             >Iniciar sesión</nuxt-link
           ></v-btn
         >
-        <v-btn  v-if="userStatus == false" class="lg:ml-4 col-span-12 lg:col-span-6" color="teal darken-1"
+        <v-btn
+          v-if="userStatus == false"
+          class="lg:ml-4 col-span-12 lg:col-span-6"
+          color="teal darken-1"
           ><nuxt-link to="/registro" class="text-decoration-none"
             ><span class="text-white">Crear cuenta</span></nuxt-link
           ></v-btn
         >
       </div>
-
-      <div
-        v-else
-        class="
-          flex flex-col
-          lg:flex-row justify-end
-          items-center
-          space-y-4
-          lg:space-y-0 lg:col-span-3
-          col-span-12
-        "
-      >
-        <v-btn
-          v-if="userStatus == false"
-          outlined
-          class="lg:ml-4 col-span-12 lg:col-span-6"
-          color="light-blue darken-4"
-          ><nuxt-link
-            @click="hideNavBar"
-            :to="{ name: 'iniciar_sesion' }"
-            class="text-decoration-none"
-            >Iniciar sesión</nuxt-link
-          ></v-btn
-        >
-        <v-btn  v-if="userStatus == false" class="lg:ml-4 col-span-12 lg:col-span-6" color="teal darken-1"
-          ><nuxt-link to="/registro" class="text-decoration-none"
-            ><span @click="hideNavBar" class="text-white"
-              >Crear cuenta</span
-            ></nuxt-link
-          ></v-btn
-        >
-      </div> 
+      <!--[LOGIN DESKTOP]-->
 
       <div
         v-if="userStatus && user"
-        class="
-          flex
-          col-span-2
-          items-center
-          lg:flex-row
-          flex-col
-          justify-end
-        "
+        class="flex col-span-4 items-center lg:flex-row flex-col justify-end"
       >
         <div>
           <nuxt-link class="mr-4" :to="{ name: 'home' }">
@@ -131,18 +76,43 @@
     </div>
 
     <div
-      class="
-        flex
-        lg:flex-row
-        flex-col flex-wrap
-        justify-between
-        grid grid-cols-12
-        col-span-12
-        space-y-8
-        lg:space-y-0
-      "
+      class="flex lg:flex-row flex-col flex-wrap justify-between grid grid-cols-12 col-span-12 lg:mt-[0px] lg:space-y-0"
       v-show="$vuetify.breakpoint.mobile ? showMenu : true"
     >
+      <!-- [LOGIN MOBILE] -->
+      <div
+        v-if="($vuetify.breakpoint.mobile ? true : false) && (userStatus == false)"
+        class="flex flex-col lg:flex-row py-4 bg-blue-900 justify-end items-end space-y-4 lg:space-y-0 lg:col-span-3 col-span-12 w-full"
+      >
+        <div
+          class="flex justify-end align-end w-full px-[30px]"
+          @click="hideNavBar"
+        >
+          <v-icon class="mr-1" color="white">mdi-account</v-icon>
+          <nuxt-link
+            :to="{ name: 'iniciar_sesion' }"
+            class="text-decoration-none"
+            ><span class="text-white">Iniciar sesión</span></nuxt-link
+          >
+        </div>
+      </div>
+
+      <div
+        v-if="($vuetify.breakpoint.mobile ? true : false) && (userStatus == false)"
+        class="flex flex-col lg:flex-row py-4 bg-teal-700 justify-end items-end space-y-4 lg:space-y-0 lg:col-span-3 col-span-12 w-full"
+      >
+        <div
+          class="flex justify-end align-end w-full px-[30px]"
+          @click="hideNavBar"
+        >
+          <v-icon class="mr-1" color="white">mdi-account-plus</v-icon>
+          <nuxt-link :to="{ name: 'registro' }" class="text-decoration-none"
+            ><span class="text-white">Crear cuenta</span></nuxt-link
+          >
+        </div>
+      </div>
+      <!-- [LOGIN MOBILE] -->
+
       <div
         :class="`
           md:text-md
@@ -150,12 +120,15 @@
           flex
           lg:flex-row
           flex-col
-          space-y-8
+          space-y-4
           lg:space-y-0
           space-x-0
+          px-[30px]
+          mt-[20px]
+          lg:mt-[0px]
+          lg:px-[0px]
+          mb-8
           lg:space-x-12
-          items-center
-          align-center
           ${col_span}
         `"
       >
@@ -169,7 +142,7 @@
         >
 
         <nuxt-link :to="{ name: 'noticias' }" v-else>
-          <span @click="showNavBar" class="text-gray-500"
+          <span @click="showNavBar" class="text-gray-500 text-xl font-bold"
             >Noticias</span
           ></nuxt-link
         >
@@ -184,7 +157,7 @@
         >
 
         <nuxt-link :to="{ name: 'eventos' }" v-else>
-          <span @click="showNavBar" class="text-gray-500"
+          <span @click="showNavBar" class="text-gray-500 text-xl font-bold"
             >Eventos</span
           ></nuxt-link
         >
@@ -196,7 +169,7 @@
             @mouseleave="showOptions = false"
             class="text-gray-500 relative cursor-pointer"
           >
-            Emprendedores
+            Dinamiza
             <div
               @mouseleave="showOptions = false"
               @mouseover="showOptions = true"
@@ -207,16 +180,7 @@
                 <v-list-item-title>
                   <nuxt-link :to="{ name: 'emprendedores' }">
                     <p
-                      class="
-                        text-gray-500
-                        px-6
-                        py-4
-                        my-0
-                        hover:bg-gray-50
-                        rounded-pill
-                        hover:text-blue-600
-                        text-2xl
-                      "
+                      class="text-gray-500 px-6 py-4 my-0 hover:bg-gray-50 rounded-pill hover:text-blue-600 text-2xl"
                     >
                       Vitrina Emprendedores
                     </p></nuxt-link
@@ -226,16 +190,7 @@
                 <v-list-item-title>
                   <nuxt-link :to="{ name: 'emprendedores-testimonios' }">
                     <p
-                      class="
-                        text-gray-500
-                        px-6
-                        py-4
-                        my-0
-                        hover:bg-gray-50
-                        rounded-pill
-                        hover:text-blue-600
-                        text-2xl
-                      "
+                      class="text-gray-500 px-6 py-4 my-0 hover:bg-gray-50 rounded-pill hover:text-blue-600 text-2xl"
                     >
                       Testimonios
                     </p></nuxt-link
@@ -246,8 +201,8 @@
           </div>
 
           <div v-else class="text-gray-500 cursor-pointer w-full">
-            <div class="flex justify-center w-full">
-              Emprendedores
+            <div class="flex justify-between w-full font-bold text-xl">
+              Dinamiza
               <v-icon v-if="showOptions == false" @click="showOptions = true"
                 >mdi-chevron-down</v-icon
               >
@@ -257,22 +212,22 @@
             </div>
 
             <div v-if="showOptions">
-              <div class="mt-4 flex flex-col align-center">
-                <v-list-item-title class="my-4"
+              <div class="w-full flex flex-col justify-start">
+                <v-list-item-title class="my-[7px] w-full"
                   ><nuxt-link
                     class="text-decoration-none"
                     :to="{ name: 'emprendedores' }"
-                    ><p @click="showNavBar" class="text-gray-500 my-0 text-xs">
+                    ><p @click="showNavBar" class="text-gray-500 my-0">
                       Vitrina Emprendedores
                     </p></nuxt-link
                   ></v-list-item-title
                 >
 
-                <v-list-item-title class="my-4"
+                <v-list-item-title class="my-[7px] w-full"
                   ><nuxt-link
                     class="text-decoration-none"
                     :to="{ name: 'emprendedores-testimonios' }"
-                    ><p @click="showNavBar" class="text-gray-500 my-0 text-xs">
+                    ><p @click="showNavBar" class="text-gray-500 my-0">
                       Testimonios
                     </p></nuxt-link
                   ></v-list-item-title
@@ -290,12 +245,13 @@
         >
 
         <nuxt-link :to="{ name: 'contacto' }" v-else>
-          <span @click="showNavBar" class="text-gray-500"
+          <span @click="showNavBar" class="text-gray-500 text-xl font-bold"
             >Contacto</span
           ></nuxt-link
         >
       </div>
 
+      <!-- [LOGOS]-->
       <div
         class="flex lg:justify-end col-span-12 lg:col-span-3"
         v-if="$vuetify.breakpoint.mobile ? false : true"
@@ -303,13 +259,7 @@
         <a
           href="https://www.linkedin.com/company/corparauco-chile/"
           target="_blank"
-          class="
-            mx-2
-            text-gray-700
-            dark:text-gray-200
-            hover:text-gray-600
-            dark:hover:text-gray-400
-          "
+          class="mx-2 text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
           aria-label="Linkden"
         >
           <svg class="w-8 h-8 fill-current" viewBox="0 0 512 512">
@@ -322,13 +272,7 @@
         <a
           href="https://www.facebook.com/corparauco/"
           target="_blank"
-          class="
-            mx-2
-            text-gray-700
-            dark:text-gray-200
-            hover:text-gray-600
-            dark:hover:text-gray-400
-          "
+          class="mx-2 text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
           aria-label="Facebook"
         >
           <svg class="w-8 h-8 fill-current" viewBox="0 0 512 512">
@@ -341,13 +285,7 @@
         <a
           href="https://twitter.com/corparauco"
           target="_blank"
-          class="
-            mx-2
-            text-gray-700
-            dark:text-gray-200
-            hover:text-gray-600
-            dark:hover:text-gray-400
-          "
+          class="mx-2 text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
           aria-label="Twitter"
         >
           <svg class="w-8 h-8 fill-current" viewBox="0 0 512 512">
@@ -360,12 +298,7 @@
         <a
           href="https://www.instagram.com/corparauco/"
           target="_blank"
-          class="
-            text-gray-700
-            dark:text-gray-200
-            hover:text-gray-600
-            dark:hover:text-gray-400
-          "
+          class="text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
           aria-label="Instagram"
         >
           <svg
@@ -380,6 +313,7 @@
           </svg>
         </a>
       </div>
+      <!-- [LOGOS]-->
     </div>
   </nav>
 </template>
@@ -414,8 +348,8 @@ export default {
     showNavBar: function () {
       this.$store.dispatch("ui/toggleMenu");
     },
-    hideNavBar: function() {
-      this.$store.dispatch('ui/hideMenu');
+    hideNavBar: function () {
+      this.$store.dispatch("ui/hideMenu");
     },
     toggleNavbar: function () {
       this.showOptions = !this.showOptions;

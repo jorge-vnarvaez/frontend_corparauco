@@ -1,10 +1,11 @@
 <template>
   <div v-if="paginas.length > 0">
+    <!--[NAV DESKTOP]-->
     <div
       v-if="$vuetify.breakpoint.mobile ? false : true"
       @mouseover="showOptions = true"
       @mouseleave="showOptions = false"
-      class="text-gray-500 relative cursor-pointer"
+      class="text-gray-500 cursor-pointer"
     >
       Nosotros
 
@@ -40,12 +41,14 @@
         </div>
       </div>
     </div>
+    <!--[NAV DESKTOP]-->
 
+
+    <!--[NAV MOBILE]-->
     <div v-else class="text-gray-500 cursor-pointer w-full">
-      <div class="flex justify-center w-full">
+      <div class="w-full text-xl flex justify-between w-full font-bold">
         Nosotros
-        <v-icon v-if="showOptions == false" @click="showOptions = true"
-          >mdi-chevron-down</v-icon
+        <v-icon v-if="showOptions == false" @click="showOptions = true">mdi-chevron-down</v-icon
         >
         <v-icon v-if="showOptions" @click="showOptions = false"
           >mdi-chevron-up</v-icon
@@ -53,16 +56,16 @@
       </div>
 
       <div v-if="showOptions">
-        <div class="mt-4 flex flex-col align-center">
+        <div class="flex flex-col justify-start w-full">
           <v-list-item-title
             v-for="pagina in paginas"
             :key="pagina.id"
-            class="my-4"
+            class="w-full my-[7px]"
             ><nuxt-link
               class="text-decoration-none"
               :to="{ name: `nosotros-${pagina.path}` }"
                 
-              ><p @click="showMenu" class="text-gray-500 my-0 text-xs">
+              ><p @click="showMenu" class="text-gray-500 my-0">
                 {{ pagina.label }}
               </p></nuxt-link
             ></v-list-item-title
@@ -70,6 +73,8 @@
         </div>
       </div>
     </div>
+    <!--[NAV MOBILE]-->
+
   </div>
 </template>
 

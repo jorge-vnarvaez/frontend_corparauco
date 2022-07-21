@@ -1,5 +1,5 @@
 <template>
-  <div v-if="pagina">
+  <div v-if="pagina" class="bg-gradient-to-br from-green-200 to-white">
     <div v-if="pagina.header">
       <v-img
         height="60vh"
@@ -29,7 +29,8 @@
       class="
         px-8
         lg:px-0
-        my-48
+        my-[50px]
+        lg:my-[150px]
         grid grid-cols-12
         lg:gap-x-8
         gap-x-8
@@ -45,7 +46,7 @@
           class="
             text-2xl
             lg:text-4xl
-            w-3/12
+            w-5/12
             font-bold
             lg:leading-loose
             text-gray-700
@@ -55,7 +56,7 @@
         </p>
       </div>
 
-      <div v-if="organizaciones" class="col-span-10 lg:col-span-6 grid grid-cols-12 lg:gap-x-8 lg:gap-y-0 gap-y-8">
+      <div v-if="organizaciones" class="flex align-center my-[20px] lg:my-[0px] col-span-10 lg:col-span-6 grid grid-cols-12 lg:gap-x-8 lg:gap-y-0 gap-y-8">
         <div
           class="lg:my-8 col-span-12 lg:col-span-6"
           v-for="organizacion in organizaciones"

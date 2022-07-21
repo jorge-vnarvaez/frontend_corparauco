@@ -16,16 +16,12 @@
         </div>
 
         <p class="uppercase font-bold">Temáticas</p>
+
+        <input />
+
         <div v-if="organizadores">
           <div
-            class="
-              overflow-x-scroll
-              no-scrollbar
-              flex
-              lg:flex-col
-              space-x-4
-              lg:space-x-0
-            "
+            class="overflow-x-scroll no-scrollbar flex lg:flex-col space-x-4 lg:space-x-0"
           >
             <div v-for="organizador in organizadores" :key="organizador.id">
               <div
@@ -60,29 +56,14 @@
           <p class="font-bold mt-8">Formatos</p>
 
           <div
-            class="
-              overflow-x-scroll
-              no-scrollbar
-              flex
-              lg:flex-col
-              space-x-8
-              lg:space-x-0
-            "
+            class="overflow-x-scroll no-scrollbar flex lg:flex-col space-x-8 lg:space-x-0"
           >
             <div v-for="(formato, index) in formatos" :key="index">
               <div
                 @click="
                   filtarContenidosFormato(index, formato.attributes.nombre)
                 "
-                class="
-                  py-3
-                  flex
-                  items-center
-                  font-bold
-                  mb-0
-                  rounded-lg
-                  cursor-pointer
-                "
+                class="py-3 flex items-center font-bold mb-0 rounded-lg cursor-pointer"
               >
                 <div class="flex justify-between">
                   <span
@@ -203,13 +184,7 @@
                 "
               >
                 <a
-                  class="
-                    flex
-                    align-center
-                    cursor-pointer
-                    space-x-2
-                    text-decoration-none
-                  "
+                  class="flex align-center cursor-pointer space-x-2 text-decoration-none"
                   target="_blank"
                   :href="`${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`"
                   ><v-icon color="red darken-4" large>mdi-file-pdf-box</v-icon>
@@ -309,14 +284,6 @@
           </div>
         </div>
         <!-- [CLASES]-->
-
-        <!-- [CURSOS ]-->
-        <div class="mt-12">
-            <p class="font-bold text-3xl mr-6 mb-0">Nuestros cursos que tenemos para tí</p>
-
-            <cursos />
-        </div>
-        <!-- [CURSOS ]-->
       </div>
 
       <div v-if="contenidos.length == 0" class="col-span-9">
@@ -329,14 +296,12 @@
 </template>
 
 <script>
-
-import Cursos from './Cursos.vue';
 import { Youtube } from "vue-youtube";
 import CoolLightBox from "vue-cool-lightbox";
 import "vue-cool-lightbox/dist/vue-cool-lightbox.min.css";
 
 export default {
-  components: { Cursos, Youtube, CoolLightBox },
+  components: { Youtube, CoolLightBox },
   data() {
     return {
       index: null,

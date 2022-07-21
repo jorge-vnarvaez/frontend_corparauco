@@ -6,7 +6,7 @@
         v-if="pagina.header"
       >
         <div class="flex flex-col w-full mx-auto">
-          <div class="mb-24 lg:w-10/12 lg:px-0 px-4 w-full" v-if="pagina.secciones">
+          <div class="mb-24 lg:w-10/12 lg:px-0 py-4 px-4 w-full" v-if="pagina.secciones">
             <div class="lg:mb-6" v-if="pagina.secciones[1]">
               <p
                 class="
@@ -90,11 +90,11 @@
     </div>
 
     <v-container v-if="pagina.secciones" class="lg:px-0 px-4 my-20">
-      <p class="lg:text-6xl text-2xl font-weight-bold text-gray-700">
+      <p class="lg:text-6xl text-2xl font-weight-bold text-gray-700 px-4">
         Nuestros objetivos
       </p>
 
-      <div class="my-20 grid grid-cols-12 lg:grid-rows-2 gap-6">
+      <div class="my-[20px] lg:my-[120px] grid grid-cols-12 lg:grid-rows-2 gap-6">
         <div
           v-if="pagina.secciones[4]"
           class="

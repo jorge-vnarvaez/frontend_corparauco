@@ -1,8 +1,8 @@
 <template>
   <div class="bg-gradient-to-b from-slate-50 to-white">
-    <v-container v-if="pagina" class="py-16">
-      <div v-if="pagina.header">
-        <p class="lg:text-3xl text-xl font-weight-light px-0 text-gray-600">
+    <v-container v-if="pagina">
+      <div v-if="pagina.header" class="py-[20px] lg:py-[50px] px-4">
+        <p class="lg:text-4xl text-2xl font-weight-light text-gray-600">
           {{ pagina.header.titulo }}
         </p>
 
