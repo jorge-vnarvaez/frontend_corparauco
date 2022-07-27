@@ -1,6 +1,6 @@
 <template>
-  <div class="mt-24" v-if="cursosRecientesData">
-    <p class="font-bold text-3xl mr-6 mb-6 px-[0px] lg:px-[32px]">
+  <div class="mt-10" v-if="cursosRecientesData">
+    <p class="font-bold text-3xl mr-6 mb-6 px-[10px] lg:px-[32px]">
       Continuar viendo
     </p>
     <div
@@ -174,7 +174,7 @@ export default {
         case "md":
           return this.cursosRecientes.slice(
             this.continuarViendoInitialIndex,
-             this.continuarViendoInitialIndex + 2
+            this.continuarViendoInitialIndex + 2
           );
         case "lg":
           return this.cursosRecientes.slice(

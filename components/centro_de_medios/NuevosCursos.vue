@@ -1,21 +1,15 @@
 <template>
-  <div
-    class="mt-20 px-[10px] lg:px-[32px]"
-    v-if="cursos_recomendados.length > 0"
-  >
-    <p class="font-bold text-3xl mr-6 mb-6">
-      Cursos recomendados, porque viste <span class="text-blue-800">"{{ recomendaciones[0].titulo_curso }}"</span>
-    </p>
+  <div class="px-[10px] lg:px-[32px]">
+    <span class="block font-bold text-3xl mr-6 mb-6">Nuevos cursos</span>
     <div
       class="flex lg:grid lg:grid-cols-12 lg:gap-y-6 space-x-8 lg:space-x-0 no-scrollbar overflow-x-scroll"
     >
       <div
-        v-for="curso in cursos_recomendados"
+        v-for="curso in cursos"
         :key="curso.id"
         :class="`${col_span}` + ' cursor-pointer'"
         @click="reescribirRecomendaciones(curso)"
       >
-        <!-- Reemplazar por slug -->
         <nuxt-link :to="{ name: 'cursos-id', params: { id: curso.id } }">
           <v-img
             v-if="curso.attributes.imagen_referencia.data"
@@ -37,46 +31,25 @@
 export default {
   data() {
     return {
-      cursos_recomendados: [],
-      recomendaciones: [],
+      cursos: [],
     };
   },
-  // create mounted lifecycle hook to get recomendados item from localStorage if recomendaciones is not empty
-  // JSON parse  otherwise set it to an empty array
-  async mounted() {
-    this.recomendaciones =
-      localStorage.getItem("recomendaciones") != null
-        ? JSON.parse(localStorage.getItem("recomendaciones"))
-        : localStorage.getItem("recomendaciones");
-    this.recomendaciones = this.recomendaciones != null ? this.recomendaciones : [];
-
-    // require qs module
+  async fetch() {
     const qs = require("qs");
 
-    // create a query string to filter organizadores where title is equal to all the titles in recomendaciones
-    if (this.recomendaciones.length > 0) {
-      let query = qs.stringify({
-        filters: {
-          organizadores: {
-            titulo: {
-              $eq: this.recomendaciones.map((item) => {
-                if (Object.values(item)[1] >= 2) {
-                  return Object.keys(item)[1];
-                }
-              }),
-            },
-          },
+    // filter new cursos added in the last week
+    const query = qs.stringify({
+      filters: {
+        createdAt: {
+          $gte: Date.now() - 604800000,
         },
-        populate: ["imagen_referencia", "organizadores"],
-      });
+      },
+      populate: ["imagen_referencia", "organizadores"],
+    });
 
-      // get the cursos from the api using $axios and the query string
-      this.cursos_recomendados = await this.$axios
-        .$get(`${this.$config.apiUrl}/api/cursos?${query}`)
-        .then((response) => {
-          return response.data;
-        });
-    }
+    this.cursos = await this.$axios
+      .get(`${this.$config.apiUrl}/api/cursos?${query}`)
+      .then((res) => res.data.data);
   },
   methods: {
     reescribirRecomendaciones(curso) {

@@ -106,6 +106,12 @@
               Centro de medios
             </p></nuxt-link
           >
+
+          <nuxt-link :to="{ name: 'cursos' }" class="my-[7px]">
+            <p @click="showMenu" class="text-gray-500 my-0">
+              Cursos
+            </p></nuxt-link
+          >
         </div>
       </div>
     </div>

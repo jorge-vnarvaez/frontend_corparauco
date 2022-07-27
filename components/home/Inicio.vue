@@ -8,6 +8,7 @@
         defaultTitle="Lo sentimos"
         defaultLabel="No tenemos programado ningún evento para esta semana"
         defaultBtnMsg="Ver otros eventos"
+        linkTo="eventos"
       />
       <div v-else class="col-span-12">
         <span class="font-bold text-3xl px-8 mb-6">Eventos esta semana </span>

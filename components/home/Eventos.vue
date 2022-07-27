@@ -4,10 +4,14 @@
       <div
         v-for="evento in eventos.data"
         :key="evento.id"
-        class="bg-white pa-8 shadow-md mt-8 rounded-lg border border-gray-200"
+        :class="`${isFinished(evento.id) ? 'bg-gray-100' : 'bg-white'}` + ' pa-8 shadow-md mt-8 rounded-lg border border-gray-200'"
       >
         <div class="flex lg:flex-row flex-col">
-          <p class="text-2xl font-bold mb-6">{{ evento.attributes.titulo }}</p>
+          <p class="text-2xl font-bold mb-2">{{ evento.attributes.titulo }}</p>
+        </div>
+
+        <div v-if="isFinished(evento.id)" class="mb-8 flex space-x-2">
+          <v-icon color="red lighten-1">mdi-lock</v-icon><p class="mb-0 text-red-400">Este evento ya fue realizado</p>
         </div>
 
         <div class="flex flex-col">
@@ -41,13 +45,6 @@
               class="bg-blue-600 px-4 py-1 white--text text-sm w-32 rounded-xl"
             >
               <span>Evento privado</span>
-            </div>
-
-            <div
-              v-if="!evento.attributes.is_public"
-              class="px-4 rounded-full py-1 white--text text-sm"
-            >
-              <span>Requiere inscripción</span>
             </div>
           </div>
          <!-- <nuxt-link :to="{ name: 'eventos-id', params: { id: evento.id} }" target="_blank"><v-btn outlined> Ver página del evento <v-icon>mdi-arrow-top-right-thick</v-icon></v-btn></nuxt-link> -->
@@ -83,6 +80,26 @@ export default {
       moment.locale("ES");
 
       return (fecha) => moment(fecha).format("dddd DD [de] MMMM YYYY");
+    },
+    // create a computed property who receive an evento id and check if event attributes fecha_termino is null or not
+    // if it is null, use event attributes fecha_inicio to check if it is finished or not
+    // if it is not null, use event attributes fecha_termino to check if it is finished or not
+    isFinished() {
+      return (id) => {
+        const evento = this.eventos.data.find((evento) => evento.id === id);
+
+        const moment = require("moment");
+
+        if (evento.attributes.fecha_termino) {
+          return moment(evento.attributes.fecha_termino).isBefore(
+            moment()
+          );
+        } else {
+          return moment(evento.attributes.fecha_inicio).isBefore(
+            moment()
+          );
+        }
+      };
     },
   },
 };

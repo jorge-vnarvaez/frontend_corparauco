@@ -211,6 +211,8 @@ export default {
       id_contenido_seleccionado: -1,
       id_modulo_abierto: -1,
       contenido_seleccionado: null,
+      dialogValoracion: false,
+      dialogValoracionClosed: false,
     };
   },
   mounted() {
@@ -266,6 +268,7 @@ export default {
   },
   updated() {
     this.urlRecurso = localStorage.getItem("urlRecurso");
+    this.halfHasFinalizados();
   },
   methods: {
     ended() {
@@ -292,6 +295,11 @@ export default {
       });
     },
     seleccionarContenido(id, id_modulo, contenido, index, index_modulo) {
+      index = index == 0 ? 1 : index + 1;
+      index_modulo = index_modulo == 0 ? 0 : index_modulo + 1;
+
+      let index_video = index_modulo + index;
+
       // Obtener meta data de que cursos están siendo consumidos
       this.id_contenido_seleccionado = id;
       this.id_modulo_abierto = id_modulo;
@@ -329,7 +337,7 @@ export default {
           id_curso: this.curso.id,
           ultimoModuloVisitado: this.id_modulo_abierto,
           ultimoContenido: this.id_contenido_seleccionado,
-          indexUltimoContenido: index * (index_modulo + 1),
+          indexUltimoContenido: index_video,
         });
       }
 
@@ -339,7 +347,7 @@ export default {
           if (curso.id_curso == this.curso.id) {
             curso.ultimoModuloVisitado = this.id_modulo_abierto;
             curso.ultimoContenido = this.id_contenido_seleccionado;
-            curso.indexUltimoContenido = index * (index_modulo + 1);
+            curso.indexUltimoContenido = index_video;
           }
         });
       }
@@ -399,6 +407,26 @@ export default {
 
       return id;
     },
+    halfHasFinalizados() {
+      const contenidosFinalizados =
+        localStorage.getItem("contenidosFinalizados") != null
+          ? JSON.parse(localStorage.getItem("contenidosFinalizados"))
+          : localStorage.getItem("contenidosFinalizados");
+
+      // from contenidosFinalizados filter all items with id_curso == this.curso.id
+      const contenidosFinalizadosCurso = contenidosFinalizados.filter(
+        (contenido) => contenido.id_curso == this.curso.id
+      );
+
+      if (
+        (contenidosFinalizadosCurso.length * 100) / this.contenidosLength >=
+        50
+      ) {
+        this.dialogValoracion = true;
+      } else {
+        this.dialogValoracion = false;
+      }
+    },
   },
   async asyncData(context) {
     const qs = require("qs");
@@ -409,6 +437,7 @@ export default {
         "modulos.contenidos",
         "modulos.contenidos.recursos",
         "organizadores",
+        "valoraciones",
       ],
     });
 
@@ -418,6 +447,15 @@ export default {
       )
       .then((res) => res.data);
     return { curso };
+  },
+  // create a computed property to get the length of the array of contenidos for this curso
+  computed: {
+    contenidosLength() {
+      return this.curso.attributes.modulos.reduce((acc, modulo) => {
+        return acc + modulo.contenidos.length;
+      }, 0);
+    },
+
   },
 };
 </script>
