@@ -4,7 +4,7 @@
     <!-- CONTENIDOS POR ORGANIZADOR -->
     <div
       v-if="contenidosPorOrganizador"
-      class="col-span-5 order-0 row-span-4 bg-white py-6 px-8 rounded-lg shadow-md"
+      class="col-span-8 order-0 row-span-4 bg-white py-6 px-8 rounded-lg shadow-md"
     >
       <div class="flex flex-col space-y-8">
         <div
@@ -52,7 +52,7 @@
 
 
     <!-- TOP ORGANIZADORES VISUALIZADOS -->
-    <div class="col-span-3 row-span-2 bg-white py-6 px-8 rounded-lg shadow-md">
+    <div class="col-span-4 row-span-2 bg-white py-6 px-8 rounded-lg shadow-md">
       <span class="block text-sky-900 font-bold text-xl mb-4"
         >Top organizadores visualizados</span
       >
@@ -74,22 +74,8 @@
     </div>
     <!-- TOP ORGANIZADORES VISUALIZADOS -->
 
-    <!-- CONTENIDO MAS POPULAR -->
-    <div class="col-span-2 row-span-1 bg-white py-6 px-8 rounded-lg shadow-md">
-      <span class="block text-gray-400 font-bold">Contenido más popular</span>
-      <span class="text-sm font-bold">{{ contenidoPopular[0] }}</span>
-    </div>
-    <!-- CONTENIDO MAS POPULAR -->
-
-    <!-- CONTENIDO MENOS POPULAR -->
-    <div class="col-span-2 row-span-1 bg-white py-6 px-8 rounded-lg shadow-md">
-      <span class="block text-gray-400 font-bold">Contenido menos popular</span>
-      <span class="text-sm font-bold">{{ contenidoMenosPopular[0] }}</span>
-    </div>
-    <!-- CONTENIDO MENOS POPULAR -->
-
-    <!-- TOP FORMATOS VISUALIZADOS -->
-    <div class="col-span-3 row-span-2 bg-white py-6 px-8 rounded-lg shadow-md">
+      <!-- TOP FORMATOS VISUALIZADOS -->
+    <div class="col-span-4 row-span-2 bg-white py-6 px-8 rounded-lg shadow-md">
       <span class="block text-sky-900 font-bold text-xl mb-4"
         >Top formatos visualizados</span
       >
@@ -107,6 +93,22 @@
       </ol>
     </div>
     <!-- TOP FORMATOS VISUALIZADOS -->
+
+    <!-- CONTENIDO MAS POPULAR -->
+    <div class="col-span-4 row-span-1 bg-white py-6 px-8 rounded-lg shadow-md">
+      <span class="block text-gray-400 font-bold">Contenido más popular</span>
+      <span class="text-sm font-bold">{{ contenidoPopular[0] }}</span>
+    </div>
+    <!-- CONTENIDO MAS POPULAR -->
+
+    <!-- CONTENIDO MENOS POPULAR -->
+    <div class="col-span-4 row-span-1 bg-white py-6 px-8 rounded-lg shadow-md">
+      <span class="block text-gray-400 font-bold">Contenido menos popular</span>
+      <span class="text-sm font-bold">{{ contenidoMenosPopular[0] }}</span>
+    </div>
+    <!-- CONTENIDO MENOS POPULAR -->
+
+  
   </div>
 </template>
 

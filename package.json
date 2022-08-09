@@ -17,6 +17,7 @@
     "chart.js": "^3.9.1",
     "cookie-universal-nuxt": "^2.1.5",
     "core-js": "^3.19.3",
+    "echarts": "^5.3.3",
     "get-youtube-id": "^1.0.1",
     "marked": "^4.0.14",
     "moment": "^2.29.3",
