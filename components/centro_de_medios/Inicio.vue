@@ -102,6 +102,7 @@
                 :video-id="getId(lastContenido.attributes.archivo.url_youtube)"
                 :player-vars="playerVars"
                 class="rounded-lg"
+                @playing="logContenido(lastContenido.id)"
               ></youtube>
             </div>
             <!-- [YOUTUBE VIDEO] -->
@@ -119,7 +120,7 @@
                   v-if="lastContenido.attributes.imagen_referencia.data"
                   width="600"
                   height="300"
-                  class="rounded-lg shadow-xl"
+                  class="rounded-lg shadow-xl cursor-pointer"
                   :src="`${$config.apiUrl}${lastContenido.attributes.imagen_referencia.data.attributes.url}`"
                 ></v-img>
               </a>
@@ -141,10 +142,13 @@
                     `${$config.apiUrl}${lastContenido.attributes.archivo.archivo.data.attributes.url}`,
                   ]"
                   :key="imagenIndex"
-                  @click="index = imagenIndex"
+                  @click="
+                    index = imagenIndex;
+                    logContenido(lastContenido.id);
+                  "
                   width="600"
                   height="300"
-                  class="rounded-lg shadow-xl"
+                  class="rounded-lg shadow-xl cursor-pointer"
                   :src="imagen"
                 ></v-img>
               </div>
@@ -216,7 +220,7 @@
                 v-if="video.attributes.archivo"
                 width="200"
                 height="180"
-                class="rounded-xl shadow-xl"
+                class="rounded-xl shadow-xl cursor-pointer"
                 :src="`https://img.youtube.com/vi/${getId(
                   video.attributes.archivo.url_youtube
                 )}/0.jpg`"
@@ -274,7 +278,7 @@
                 v-if="clase.attributes.imagen_referencia.data"
                 width="200"
                 height="180"
-                class="rounded-xl shadow-xl"
+                class="rounded-xl shadow-xl cursor-pointer"
                 :src="`${$config.apiUrl}${clase.attributes.imagen_referencia.data.attributes.url}`"
               ></v-img>
               <p class="mt-4 font-bold text-blue-800 w-10/12">
@@ -296,6 +300,8 @@
 </template>
 
 <script>
+
+import moment from 'moment';
 import { Youtube } from "vue-youtube";
 import CoolLightBox from "vue-cool-lightbox";
 import "vue-cool-lightbox/dist/vue-cool-lightbox.min.css";
@@ -335,6 +341,96 @@ export default {
       const id = getYoutubeID(url);
 
       return id;
+    },
+    async logContenido(id) {
+      const contenido = this.$store.getters["contenidos/getContenido"](id);
+
+      // Obtener el usuario actual, si no esta logueado, definir 0 como usuario
+      const user =
+        this.$cookies.get("user") != null
+          ? JSON.parse(this.$cookies.get("user")).toString()
+          : "0";
+
+
+      // Crear un objeto con los datos a guardar
+      const key = {
+        action: "Consumió un contenido",
+        values: [
+          {
+            grandparent: contenido.attributes.organizadores.data[0].attributes.titulo,
+            parent: contenido.attributes.formato.data.attributes.nombre,
+            log_key: contenido.attributes.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          },
+        ],
+      };
+
+      const qs = require("qs");
+
+      const query = qs.stringify({
+        filters: {
+          user_id: {
+            $eq: user,
+          },
+        },
+        populate: ["log", "log.keys", "log.keys.values"],
+      });
+
+      // Obtener el log del usuario actual, si es 0 obtendra el log general de usuarios que no han iniciado sesion
+      const { data } = await this.$axios.get(
+        `${this.$config.apiUrl}/api/logs?${query}`
+      );
+
+      if (data.data.length == 0) {
+        await this.$axios.post(`${this.$config.apiUrl}/api/logs`, {
+          data: {
+            user_id: user,
+            log: {
+              keys: [key],
+            },
+          },
+        });
+      }
+
+      if (data.data.length > 0) {
+        // Obtener el log del usuario actual
+        const log_id = data.data[0].id;
+
+        // Obtener las keys del log del usuario actual
+        let key_data = data.data[0].attributes.log.keys;
+
+        // Verificar si el usuario actual ya ha activado la key de visitar un curso
+        let indexKey = key_data.find((key) => key.action == "Consumió un contenido");
+
+        // Si la key no existe, crearla
+        if (indexKey == undefined) {
+          key_data.push(key);
+        }
+
+        // Si la key existe, obtener el index de la key
+        if (indexKey != undefined) {
+          let index = key_data.indexOf(indexKey);
+
+          // Agregar un nuevo valor a la key
+          key_data[index].values.push({
+            grandparent: contenido.attributes.organizadores.data[0].attributes.titulo,
+            parent: contenido.attributes.formato.data.attributes.nombre,
+            log_key: contenido.attributes.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          });
+        }
+
+        await this.$axios.put(`${this.$config.apiUrl}/api/logs/${log_id}`, {
+          data: {
+            log: {
+              keys: key_data,
+            },
+          },
+        });
+      }
+
     },
     selectContenido(id) {
       this.lastContenido = this.$store.getters["contenidos/getContenido"](id);

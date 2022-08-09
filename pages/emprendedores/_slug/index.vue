@@ -163,7 +163,7 @@
           </div>
         </div>
 
-        <div v-if="emprendedor.attributes.servicios" class="pb-48">
+        <div v-if="emprendedor.attributes.servicios && emprendedor.attributes.servicios.length > 0" class="pb-48">
           <p class="text-2xl lg:text-4xl font-bold mt-20">
             Productos y/o servicios.
           </p>
@@ -173,7 +173,7 @@
               :key="index"
               class="mt-12"
             >
-              <div v-if="servicio.galeria.data.length > 0">
+              <div v-if="servicio.galeria.data">
                 <div v-if="servicio.galeria.data.length == 1">
                   <v-img
                     :width="width"

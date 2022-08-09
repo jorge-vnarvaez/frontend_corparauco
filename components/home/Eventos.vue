@@ -4,14 +4,18 @@
       <div
         v-for="evento in eventos.data"
         :key="evento.id"
-        :class="`${isFinished(evento.id) ? 'bg-gray-100' : 'bg-white'}` + ' pa-8 shadow-md mt-8 rounded-lg border border-gray-200'"
+        :class="
+          `${isFinished(evento.id) ? 'bg-gray-100' : 'bg-white'}` +
+          ' pa-8 shadow-md mt-8 rounded-lg border border-gray-200'
+        "
       >
         <div class="flex lg:flex-row flex-col">
           <p class="text-2xl font-bold mb-2">{{ evento.attributes.titulo }}</p>
         </div>
 
         <div v-if="isFinished(evento.id)" class="mb-8 flex space-x-2">
-          <v-icon color="red lighten-1">mdi-lock</v-icon><p class="mb-0 text-red-400">Este evento ya fue realizado</p>
+          <v-icon color="red lighten-1">mdi-lock</v-icon>
+          <p class="mb-0 text-red-400">Este evento ya fue realizado</p>
         </div>
 
         <div class="flex flex-col">
@@ -39,15 +43,22 @@
             <span>Evento público</span>
           </div>
 
-          <div class="flex flex-col space-x-4">
-            <div
-              v-if="!evento.attributes.is_public"
-              class="bg-blue-600 px-4 py-1 white--text text-sm w-32 rounded-xl"
+          <div class="flex flex-col lg:flex-row lg:justify-between space-x-4" v-if="isFinished(evento.id)">
+            <v-btn color="red darken-2" depressed outlined
+              ><nuxt-link
+                :to="{
+                  name: 'eventos-slug',
+                  params: { slug: evento.attributes.slug },
+                }"
+                target="_blank"
+                ><v-icon class="mr-2" color="red darken-2">mdi-video</v-icon
+                ><span class="text-white font-bold"
+                  >Revivir evento</span
+                ></nuxt-link
+              ></v-btn
             >
-              <span>Evento privado</span>
-            </div>
           </div>
-         <!-- <nuxt-link :to="{ name: 'eventos-id', params: { id: evento.id} }" target="_blank"><v-btn outlined> Ver página del evento <v-icon>mdi-arrow-top-right-thick</v-icon></v-btn></nuxt-link> -->
+          <!-- <nuxt-link :to="{ name: 'eventos-id', params: { id: evento.id} }" target="_blank"><v-btn outlined> Ver página del evento <v-icon>mdi-arrow-top-right-thick</v-icon></v-btn></nuxt-link> -->
         </div>
       </div>
     </div>
@@ -62,16 +73,15 @@ export default {
     };
   },
   async fetch() {
-    const qs = require('qs');
+    const qs = require("qs");
 
     const query = qs.stringify({
-      sort: ['fecha_inicio:desc']
-    })
+      sort: ["fecha_inicio:desc"],
+    });
 
-
-    this.eventos = await fetch(`${this.$config.apiUrl}/api/eventos?${query}`).then(
-      (res) => res.json()
-    );
+    this.eventos = await fetch(
+      `${this.$config.apiUrl}/api/eventos?${query}`
+    ).then((res) => res.json());
   },
   computed: {
     fechaFormateada() {
@@ -91,13 +101,9 @@ export default {
         const moment = require("moment");
 
         if (evento.attributes.fecha_termino) {
-          return moment(evento.attributes.fecha_termino).isBefore(
-            moment()
-          );
+          return moment(evento.attributes.fecha_termino).isBefore(moment());
         } else {
-          return moment(evento.attributes.fecha_inicio).isBefore(
-            moment()
-          );
+          return moment(evento.attributes.fecha_inicio).isBefore(moment());
         }
       };
     },
@@ -105,5 +111,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

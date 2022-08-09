@@ -1,4 +1,4 @@
-export default function (context) {
+export default async function (context) {
 
     const jwt = context.$cookies.get('jwt');
 

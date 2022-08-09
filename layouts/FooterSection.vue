@@ -29,13 +29,7 @@
                   v-if="pagina.rrss[2] && pagina.rrss[2].url_to"
                   :href="pagina.rrss[2].url_to"
                   target="_blank"
-                  class="
-                    mx-2
-                    text-gray-700
-                    dark:text-gray-200
-                    hover:text-gray-600
-                    dark:hover:text-gray-400
-                  "
+                  class="mx-2 text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
                   aria-label="Linkden"
                 >
                   <svg class="w-8 h-8 fill-current" viewBox="0 0 512 512">
@@ -49,13 +43,7 @@
                   v-if="pagina.rrss[0] && pagina.rrss[0].url_to"
                   :href="pagina.rrss[0].url_to"
                   target="_blank"
-                  class="
-                    mx-2
-                    text-gray-700
-                    dark:text-gray-200
-                    hover:text-gray-600
-                    dark:hover:text-gray-400
-                  "
+                  class="mx-2 text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
                   aria-label="Facebook"
                 >
                   <svg class="w-8 h-8 fill-current" viewBox="0 0 512 512">
@@ -69,13 +57,7 @@
                   v-if="pagina.rrss[1] && pagina.rrss[1].url_to"
                   :href="pagina.rrss[1].url_to"
                   target="_blank"
-                  class="
-                    mx-2
-                    text-gray-700
-                    dark:text-gray-200
-                    hover:text-gray-600
-                    dark:hover:text-gray-400
-                  "
+                  class="mx-2 text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
                   aria-label="Twitter"
                 >
                   <svg class="w-8 h-8 fill-current" viewBox="0 0 512 512">
@@ -89,12 +71,7 @@
                   v-if="pagina.rrss[3] && pagina.rrss[3].url_to"
                   :href="pagina.rrss[3].url_to"
                   target="_blank"
-                  class="
-                    text-gray-700
-                    dark:text-gray-200
-                    hover:text-gray-600
-                    dark:hover:text-gray-400
-                  "
+                  class="text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"
                   aria-label="Instagram"
                 >
                   <svg
@@ -155,6 +132,11 @@
                   :to="{ name: 'centro_de_medios' }"
                   >Centro de medios</nuxt-link
                 >
+                <nuxt-link
+                  class="block text-sm mb-4 capitalize"
+                  :to="{ name: 'cursos' }"
+                  >Cursos</nuxt-link
+                >
               </div>
 
               <div class="col-span-2 lg:col-span-1">
@@ -176,9 +158,9 @@
                 <span class="block mt-2 text-sm text-gray-500">{{
                   pagina.telefonos[0].numero
                 }}</span>
-                  <span class="block mt-2 text-sm text-gray-500"> 
-                    {{ pagina.correos[0].email }}
-                  </span>
+                <span class="block mt-2 text-sm text-gray-500">
+                  {{ pagina.correos[0].email }}
+                </span>
               </div>
             </div>
           </div>
@@ -209,5 +191,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

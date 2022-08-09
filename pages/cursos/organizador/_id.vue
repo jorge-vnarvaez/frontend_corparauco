@@ -14,8 +14,8 @@
         >
         <nuxt-link
           :to="{
-            name: 'cursos-id',
-            params: { id: organizador.attributes.cursos.data[0].id },
+            name: 'cursos-slug',
+            params: { slug: organizador.attributes.cursos.data[0].attributes.slug },
           }"
           class="text-decoration-none"
         >
@@ -81,7 +81,7 @@
               @click="reescribirRecomendaciones(curso)"
             >
               <!-- Reemplazar por slug -->
-              <nuxt-link :to="{ name: 'cursos-id', params: { id: curso.id } }">
+              <nuxt-link :to="{ name: 'cursos-slug', params: { id: curso.attributes.slug } }">
                 <v-img
                   v-if="curso.attributes.imagen_referencia.data"
                   width="200"
@@ -103,7 +103,12 @@
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
+  mounted() {
+    this.log();
+  },
   // create an async asyncData() method to get an specific organizador using $axios module
   // using context as parameter
   async asyncData(context) {
@@ -121,6 +126,96 @@ export default {
     return { organizador };
   },
   methods: {
+    async log() {
+      // Obtener el usuario actual, si no esta logueado, definir 0 como usuario
+      const user =
+        this.$cookies.get("user") != null
+          ? JSON.parse(this.$cookies.get("user")).toString()
+          : "0";
+
+      // Obtener el titutlo del organizador (categoria) que se acaba de visitar
+      const organizador_title = this.organizador.attributes.titulo;
+
+
+      // Crear un objeto con los datos a guardar
+      const key = {
+        action: "Visitó un organizador",
+        values: [
+          {
+            log_key: organizador_title,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          },
+        ],
+      };
+
+      const qs = require("qs");
+
+      const query = qs.stringify({
+        filters: {
+          user_id: {
+            $eq: user,
+          },
+        },
+        populate: ["log", "log.keys", "log.keys.values"],
+      });
+
+      // Obtener el log del usuario actual, si es 0 obtendra el log general de usuarios que no han iniciado sesion
+      const { data } = await this.$axios.get(
+        `${this.$config.apiUrl}/api/logs?${query}`
+      );
+
+      // Si el log no existe, crearlo
+      if (data.data.length == 0) {
+        await this.$axios.post(`${this.$config.apiUrl}/api/logs`, {
+          data: {
+            user_id: user,
+            log: {
+              keys: [key],
+            },
+          },
+        });
+      }
+
+      // Si el log existe
+      if (data.data.length > 0) {
+        // Obtener el log del usuario actual
+        const log_id = data.data[0].id;
+
+        // Obtener las keys del log del usuario actual
+        let key_data = data.data[0].attributes.log.keys;
+
+        // Verificar si el usuario actual ya ha activado la key de visita al organizador
+        let indexKey = key_data.find(
+          (key) => key.action == "Visitó un organizador"
+        );
+
+        // Si la key no existe, crearla
+        if (indexKey == undefined) {
+          key_data.push(key);
+        }
+
+        // Si la key existe, obtener el index de la key
+        if (indexKey != undefined) {
+          let index = key_data.indexOf(indexKey);
+
+          // Agregar un nuevo valor a la key
+          key_data[index].values.push({
+            log_key: organizador_title,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          });
+        }
+
+        await this.$axios.put(`${this.$config.apiUrl}/api/logs/${log_id}`, {
+          data: {
+            log: {
+              keys: key_data,
+            },
+          },
+        });
+      }
+    },
     reescribirRecomendaciones(curso) {
       let recomendaciones =
         localStorage.getItem("recomendaciones") != null

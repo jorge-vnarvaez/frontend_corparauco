@@ -2,14 +2,7 @@
   <div class="bg-gradient-to-b from-slate-50 to-white px-2">
     <v-container class="grid grid-cols-12 my-12 lg:gap-x-8">
       <div
-        class="
-          overflow-x-scroll
-          no-scrollbar
-          flex
-          lg:flex-col
-          col-span-12
-          lg:col-span-2
-        "
+        class="overflow-x-scroll no-scrollbar flex lg:flex-col col-span-12 lg:col-span-2"
       >
         <div v-for="menu in menus" :key="menu.id">
           <div
@@ -30,21 +23,10 @@
       <!-- center -->
       <div class="col-span-12 lg:col-span-6">
         <div
-          class="
-            bg-white
-            px-6
-            py-6
-            rounded-lg
-            shadow-sm
-            border border-gray-200
-            mb-8
-            flex
-            align-center
-            items-center
-          "
+          class="bg-white px-8 py-6 rounded-lg shadow-sm border border-gray-200 mb-8 flex align-center items-center"
           v-if="user"
         >
-          <div class="ml-6">
+          <div>
             <p class="mb-0 text-xl">Bienvenid@,</p>
             <p class="text-xl lg:text-2xl font-bold">
               {{ user.data.nombre }}
@@ -54,7 +36,7 @@
           </div>
         </div>
 
-        <div v-if="tab == 0">
+        <div v-if="tab == 1">
           <inicio />
         </div>
 
@@ -74,15 +56,13 @@
           <programas-sercotec />
         </div>
 
-        <div v-if="tab == 6">
-
-        </div>
+        <div v-if="tab == 6"></div>
 
         <div v-if="tab == 7">
           <mis-cursos />
         </div>
 
-         <div v-if="tab == 8">
+        <div v-if="tab == 8">
           <mis-eventos :eventos="user.data.eventos" />
         </div>
       </div>
@@ -104,7 +84,7 @@ import MisCursos from "../components/home/MisCursos.vue";
 import MisEventos from "../components/home/MisEventos.vue";
 import ProgramasCorfo from "../components/home/ProgramasCorfo.vue";
 import ProgramasSercotec from "../components/home/ProgramasSercotec.vue";
-import Noticias from '../components/home/Noticias.vue';
+import Noticias from "../components/home/Noticias.vue";
 
 export default {
   layouts: "home",
@@ -128,9 +108,9 @@ export default {
   data() {
     return {
       user: null,
-      tab: 0,
+      tab: 1,
       options: [
-        { id: 0, label: "Inicio", icon: "mdi-home-outline" },
+        { id: 1, label: "Inicio", icon: "mdi-home-outline" },
         // { id: 1, label: "Reciente", icon: "mdi-trending-up" },
         // { id: 2, label: "Cursos", icon: "mdi-book-education-outline" },
         { id: 3, label: "Eventos", icon: "mdi-calendar-blank-outline" },

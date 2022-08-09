@@ -20,17 +20,8 @@
             <v-row>
               <v-col lg="4" cols="12">
                 <label
-                  class="
-                    block
-                    text-xs
-                    font-semibold
-                    text-gray-600
-                    uppercase
-                  "
-                  >País<span
-                    class="text-red-500"
-                    >*</span
-                  ></label
+                  class="block text-xs font-semibold text-gray-600 uppercase"
+                  >País<span class="text-red-500">*</span></label
                 >
 
                 <v-select
@@ -80,6 +71,68 @@
                   flat
                 ></v-text-field>
               </v-col>
+              <v-col lg="4" cols="12" v-show="is_chile">
+                <label
+                  class="block text-xs font-semibold text-gray-600 uppercase"
+                  >Región<span class="text-red-500">*</span></label
+                >
+
+                <v-select
+                  class="mt-2"
+                  :items="regiones"
+                  background-color="grey lighten-4"
+                  item-text="nombre"
+                  item-value="codigo"
+                  v-model="region"
+                  :rules="reglaNotNull"
+                  solo
+                  flat
+                >
+                </v-select
+              ></v-col>
+
+               <v-col lg="4" cols="12" v-show="is_chile">
+                <label
+                  class="block text-xs font-semibold text-gray-600 uppercase"
+                  >Provincia<span class="text-red-500">*</span></label
+                >
+
+                <v-select
+                  class="mt-2"
+                  :items="provincias"
+                  background-color="grey lighten-4"
+                  item-text="nombre"
+                  item-value="codigo"
+                  no-data-text="Debe seleccionar la región primero"
+                  v-model="provincia"
+                  :rules="reglaNotNull"
+                  solo
+                  flat
+                >
+                </v-select
+              ></v-col>
+
+               <v-col lg="4" cols="12" v-show="is_chile">
+                <label
+                  class="block text-xs font-semibold text-gray-600 uppercase"
+                  >Comuna<span class="text-red-500">*</span></label
+                >
+
+                <v-select
+                  class="mt-2"
+                  :items="comunas"
+                  background-color="grey lighten-4"
+                  item-text="nombre"
+                  item-value="codigo"
+                  no-data-text="Debe seleccionar su provincia primero"
+                  v-model="comuna"
+                  :rules="reglaNotNull"
+                  solo
+                  flat
+                >
+                </v-select
+              ></v-col>
+
               <v-col lg="4" cols="12">
                 <label
                   class="block text-xs font-semibold text-gray-600 uppercase"
@@ -185,33 +238,13 @@
 
           <button
             type="submit"
-            class="
-              w-full
-              py-3
-              mt-2
-              font-medium
-              tracking-widest
-              text-white
-              uppercase
-              bg-amber-700
-              shadow-lg
-              focus:outline-none
-              hover:bg-blue-800 hover:shadow-none
-            "
+            class="w-full py-3 mt-2 font-medium tracking-widest text-white uppercase bg-amber-700 shadow-lg focus:outline-none hover:bg-blue-800 hover:shadow-none"
           >
             <span class="text-white">Crear cuenta</span>
           </button>
         </v-form>
         <span
-          class="
-            flex
-            inline-block
-            text-lg
-            mt-8
-            text-gray-500
-            cursor-pointer
-            hover:text-black
-          "
+          class="flex inline-block text-lg mt-8 text-gray-500 cursor-pointer hover:text-black"
         >
           ¿Ya estas registrado?,
           <span
@@ -227,6 +260,11 @@
 
 <script>
 export default {
+  async asyncData(context) {
+    await context.store.dispatch("ui/loadRegiones");
+    await context.store.dispatch("ui/loadProvincias");
+    await context.store.dispatch("ui/loadComunas");
+  },
   data() {
     return {
       codigoPais: null,
@@ -244,7 +282,15 @@ export default {
       password: null,
       password_confirmada: null,
       email: null,
-      pais: 'Chile',
+      pais: "Chile",
+      region: null,
+      nombreRegion: null,
+      provincias: null,
+      provincia: null,
+      nombreProvincia: null,
+      comunas: null,
+      comuna: null,
+      nombreComuna: null,
       terminos_condiciones: false,
       reglaNotNull: [(v) => !!v || "Este campo es obligatorio"],
       reglaEmail: [
@@ -273,13 +319,30 @@ export default {
     };
   },
   watch: {
-    pais: function(pais) {
+    pais: function (pais) {
       this.seleccionarPais(pais);
-    }
+    },
+    region: function(region) {
+      this.seleccionarProvincias(region);
+      this.nombreRegion = this.$store.getters['ui/getRegion'](region);
+    },
+    provincia: function(provincia) {
+      this.seleccionarComunas(provincia);
+      this.nombreProvincia = this.$store.getters['ui/getProvincia'](provincia);
+    },
+    comuna: function(comuna) {
+      this.nombreComuna = this.$store.getters['ui/getComuna'](comuna);
+    },
   },
   methods: {
     seleccionarPais(pais) {
       this.is_chile = pais == "Chile" ? true : false;
+    },
+    seleccionarProvincias(region) {
+      this.provincias = this.$store.getters['ui/getProvincias'](region);
+    },
+    seleccionarComunas(provincia) {
+      this.comunas = this.$store.getters['ui/getComunas'](provincia);
     },
     async registrarse(e) {
       e.preventDefault();
@@ -303,9 +366,8 @@ export default {
         }
 
         if (!this.correoExiste && !this.rutExiste) {
-          await this.$axios.post(
-            `${this.$config.apiUrl}/api/auth/local/register`,
-            {
+          await this.$axios
+            .post(`${this.$config.apiUrl}/api/auth/local/register`, {
               rut: this.rut != null ? this.rut : null,
               username: this.username,
               email: this.email,
@@ -322,21 +384,26 @@ export default {
               foto_perfil: null,
               orden: 0,
               pais: this.pais,
-            }
-          ).then(res => {
-            this.$router.push('registro_exitoso')
-          });
+              region: this.nombreRegion,
+              provincia: this.nombreProvincia,
+              comuna: this.nombreComuna,
+            })
+            .then((res) => {
+              this.$router.push("registro_exitoso");
+            });
         }
       }
     },
   },
   computed: {
     paises() {
-      return this.$store.getters['ui/getPaises'];
-    }
-  }
+      return this.$store.getters["ui/getPaises"];
+    },
+    regiones() {
+      return this.$store.getters["ui/getRegiones"];
+    },
+  },
 };
 </script>
 
-<style>
-</style>
+<style></style>

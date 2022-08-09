@@ -12,7 +12,7 @@
         <p class="text-justify flex items-start text-lg text-gray-600">
           {{ programa.attributes.descripcion }}
         </p>
-        <nuxt-link :to="{ name: 'programas-id', params: { id: programa.id } }" target="_blank" class="flex justify-end"
+        <nuxt-link :to="{ name: 'programas-slug', params: { slug: programa.attributes.slug } }" target="_blank" class="flex justify-end"
           ><v-btn class="text-gray-900 mt-8" outlined>Más información <v-icon>mdi-arrow-top-right-thick</v-icon></v-btn></nuxt-link
         >
       </div>
