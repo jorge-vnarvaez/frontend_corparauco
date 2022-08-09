@@ -21,7 +21,7 @@
 
       <div class="flex space-x-8">
         <nuxt-link
-          :to="{ name: 'cursos-id', params: { id: curso.id } }"
+          :to="{ name: 'cursos-slug', params: { slug: curso.attributes.slug } }"
           v-for="curso in num_cursos()"
           :key="curso.id"
           :class="

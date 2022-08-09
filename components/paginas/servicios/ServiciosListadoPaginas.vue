@@ -55,7 +55,7 @@
             </p></nuxt-link
           >
 
-          <nuxt-link :to="{ name: 'cursos' }">
+          <!-- <nuxt-link :to="{ name: 'cursos' }">
             <p
               @mouseover="on_hover = true"
               class="
@@ -69,7 +69,7 @@
               "
             >
               Cursos
-            </p></nuxt-link>
+            </p></nuxt-link> -->
         </div>
       </div>
     </div>
@@ -107,11 +107,11 @@
             </p></nuxt-link
           >
 
-          <nuxt-link :to="{ name: 'cursos' }" class="my-[7px]">
+          <!-- <nuxt-link :to="{ name: 'cursos' }" class="my-[7px]">
             <p @click="showMenu" class="text-gray-500 my-0">
               Cursos
             </p></nuxt-link
-          >
+          > -->
         </div>
       </div>
     </div>

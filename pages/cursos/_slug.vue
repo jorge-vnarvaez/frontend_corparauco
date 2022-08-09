@@ -8,11 +8,6 @@
               curso.attributes.titulo
             }}</span>
             <p class="mt-2 mb-0">{{ curso.attributes.descripcion }}</p>
-            <!-- <v-rating
-              color="warning"
-              v-model="rating"
-              icon-label="custom icon label text {0} of {1}"
-            ></v-rating> -->
           </div>
         </div>
 
@@ -62,7 +57,10 @@
             >mdi-close</v-icon
           >
         </div>
-        <div class="p-[20px] lg:p-[0px]">
+        <div
+          class="p-[20px] lg:p-[0px]"
+          v-if="curso.attributes.modulos.length > 0"
+        >
           <div
             v-for="(modulo, index_modulo) in curso.attributes.modulos"
             :key="index_modulo"
@@ -117,8 +115,7 @@
                     class="flex flex-col items-start"
                     @click="
                       seleccionarContenido(
-                        contenido.id,
-                        modulo.id,
+                        modulo,
                         contenido,
                         index,
                         index_modulo
@@ -194,6 +191,7 @@
 </template>
 
 <script>
+import moment from "moment";
 import { Youtube } from "vue-youtube";
 import _ from "lodash";
 
@@ -211,16 +209,20 @@ export default {
       id_contenido_seleccionado: -1,
       id_modulo_abierto: -1,
       contenido_seleccionado: null,
-      dialogValoracion: false,
-      dialogValoracionClosed: false,
     };
   },
   mounted() {
+    this.log();
+
     this.urlRecurso = localStorage.getItem("urlRecurso");
 
     if (this.contenido_seleccionado == null) {
-      this.contenido_seleccionado =
-        this.curso.attributes.modulos[0].contenidos[0];
+      if (this.curso.attributes.modulos.length > 0) {
+        this.contenido_seleccionado =
+          this.curso.attributes.modulos[0].contenidos[0];
+
+        this.id_contenido_seleccionado = this.contenido_seleccionado.id;
+      }
     }
 
     let cursosVisitados =
@@ -247,9 +249,16 @@ export default {
     if (ultimoModuloVisitado && ultimoContenido) {
       this.openIndex(ultimoModuloVisitado);
 
-      this.contenido_seleccionado = this.curso.attributes.modulos
-        .find((modulo) => modulo.id == ultimoModuloVisitado)
-        .contenidos.find((contenido) => contenido.id == ultimoContenido);
+      let modulo = (this.contenido_seleccionado =
+        this.curso.attributes.modulos.find(
+          (modulo) => modulo.id == ultimoModuloVisitado
+        ));
+
+      if (modulo.contenidos.length > 0) {
+        this.contenido_seleccionado = modulo.contenidos.find(
+          (contenido) => contenido.id == ultimoContenido
+        );
+      }
 
       this.id_contenido_seleccionado = this.contenido_seleccionado.id;
     }
@@ -263,14 +272,99 @@ export default {
   },
   // Espera a que el video termine y actualiza el contador finalizado y chequea que está finalizado
   created: function () {
-    this.debounceGetAnswer = _.debounce(this.ended, 18000);
-    this.debounceGetAnswer = _.debounce(this.seleccionarContenido, 2000);
+    this.debounceGetAnswer = _.debounce(this.ended, 40000);
+    this.debounceGetAnswer = _.debounce(this.seleccionarContenido, 12000);
   },
   updated() {
     this.urlRecurso = localStorage.getItem("urlRecurso");
-    this.halfHasFinalizados();
   },
   methods: {
+    async log() {
+      // Obtener el usuario actual, si no esta logueado, definir 0 como usuario
+      const user =
+        this.$cookies.get("user") != null
+          ? JSON.parse(this.$cookies.get("user")).toString()
+          : "0";
+
+      // Crear un objeto con los datos a guardar
+      const key = {
+        action: "Visitó un curso",
+        values: [
+          {
+            grandparent: "",
+            log_key: this.curso.attributes.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          },
+        ],
+      };
+
+      const qs = require("qs");
+
+      const query = qs.stringify({
+        filters: {
+          user_id: {
+            $eq: user,
+          },
+        },
+        populate: ["log", "log.keys", "log.keys.values"],
+      });
+
+      // Obtener el log del usuario actual, si es 0 obtendra el log general de usuarios que no han iniciado sesion
+      const { data } = await this.$axios.get(
+        `${this.$config.apiUrl}/api/logs?${query}`
+      );
+
+      // Si el log no existe, crearlo
+      if (data.data.length == 0) {
+        await this.$axios.post(`${this.$config.apiUrl}/api/logs`, {
+          data: {
+            user_id: user,
+            log: {
+              keys: [key],
+            },
+          },
+        });
+      }
+
+      // Si el log existe
+      if (data.data.length > 0) {
+        // Obtener el log del usuario actual
+        const log_id = data.data[0].id;
+
+        // Obtener las keys del log del usuario actual
+        let key_data = data.data[0].attributes.log.keys;
+
+        // Verificar si el usuario actual ya ha activado la key de visitar un curso
+        let indexKey = key_data.find((key) => key.action == "Visitó un curso");
+
+        // Si la key no existe, crearla
+        if (indexKey == undefined) {
+          key_data.push(key);
+        }
+
+        // Si la key existe, obtener el index de la key
+        if (indexKey != undefined) {
+          let index = key_data.indexOf(indexKey);
+
+          // Agregar un nuevo valor a la key
+          key_data[index].values.push({
+            grandparent: "",
+            log_key: this.curso.attributes.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          });
+        }
+
+        await this.$axios.put(`${this.$config.apiUrl}/api/logs/${log_id}`, {
+          data: {
+            log: {
+              keys: key_data,
+            },
+          },
+        });
+      }
+    },
     ended() {
       this.finalizarContenido(
         this.id_contenido_seleccionado,
@@ -294,15 +388,104 @@ export default {
         window.scrollTo(0, top);
       });
     },
-    seleccionarContenido(id, id_modulo, contenido, index, index_modulo) {
+    async seleccionarContenido(modulo, contenido, index, index_modulo) {
+      // Obtener el usuario actual, si no esta logueado, definir 0 como usuario
+      const user =
+        this.$cookies.get("user") != null
+          ? JSON.parse(this.$cookies.get("user")).toString()
+          : "0";
+
+      // Crear un objeto con los datos a guardar
+      const key = {
+        action: "Selecciono un contenido",
+        values: [
+          {
+            grandparent: this.curso.attributes.titulo,
+            parent: "Modulo " + modulo.titulo,
+            log_key: contenido.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          },
+        ],
+      };
+
+      const qs = require("qs");
+
+      const query = qs.stringify({
+        filters: {
+          user_id: {
+            $eq: user,
+          },
+        },
+        populate: ["log", "log.keys", "log.keys.values"],
+      });
+
+      // Obtener el log del usuario actual, si es 0 obtendra el log general de usuarios que no han iniciado sesion
+      const { data } = await this.$axios.get(
+        `${this.$config.apiUrl}/api/logs?${query}`
+      );
+
+      // Si el log no existe, crearlo
+      if (data.data.length == 0) {
+        await this.$axios.post(`${this.$config.apiUrl}/api/logs`, {
+          data: {
+            user_id: user,
+            log: {
+              keys: [key],
+            },
+          },
+        });
+      }
+
+      // Si el log existe
+      if (data.data.length > 0) {
+        // Obtener el log del usuario actual
+        const log_id = data.data[0].id;
+
+        // Obtener las keys del log del usuario actual
+        let key_data = data.data[0].attributes.log.keys;
+
+        // Verificar si el usuario actual ya ha activado la key de seleccionar un contenido
+        let indexKey = key_data.find(
+          (key) => key.action == "Selecciono un contenido"
+        );
+
+        // Si la key no existe, crearla
+        if (indexKey == undefined) {
+          key_data.push(key);
+        }
+
+        // Si la key existe, obtener el index de la key
+        if (indexKey != undefined) {
+          let index = key_data.indexOf(indexKey);
+
+          // Agregar un nuevo valor a la key
+          key_data[index].values.push({
+            grandparent: this.curso.attributes.titulo,
+            parent: "Modulo " + modulo.titulo,
+            log_key: contenido.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          });
+        }
+
+        await this.$axios.put(`${this.$config.apiUrl}/api/logs/${log_id}`, {
+          data: {
+            log: {
+              keys: key_data,
+            },
+          },
+        });
+      }
+
       index = index == 0 ? 1 : index + 1;
       index_modulo = index_modulo == 0 ? 0 : index_modulo + 1;
 
       let index_video = index_modulo + index;
 
       // Obtener meta data de que cursos están siendo consumidos
-      this.id_contenido_seleccionado = id;
-      this.id_modulo_abierto = id_modulo;
+      this.id_contenido_seleccionado = contenido.id;
+      this.id_modulo_abierto = modulo.id;
       this.contenido_seleccionado = contenido;
 
       // Si es solo recurso, obtener el archivo para desplegar en vista previa
@@ -354,7 +537,103 @@ export default {
 
       localStorage.setItem("cursosVisitados", JSON.stringify(cursosVisitados));
     },
-    finalizarContenido(id, id_modulo) {
+    async finalizarContenido(id, id_modulo) {
+      // Encontrar el modulo correspondiente al id_modulo
+      let modulo = this.curso.attributes.modulos.find(
+        (modulo) => modulo.id == id_modulo
+      );
+
+      // Encontrar el curso correspondiente al id_modulo y id_curso
+      let contenido = modulo.contenidos.find((contenido) => contenido.id == id);
+
+      // Obtener el usuario actual, si no esta logueado, definir 0 como usuario
+      const user =
+        this.$cookies.get("user") != null
+          ? JSON.parse(this.$cookies.get("user")).toString()
+          : "0";
+
+      // Crear un objeto con los datos a guardar
+      const key = {
+        action: "Finalizó un contenido",
+        values: [
+          {
+            grandparent: this.curso.attributes.titulo,
+            parent: "Modulo " + modulo.titulo,
+            log_key: contenido.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          },
+        ],
+      };
+
+      const qs = require("qs");
+
+      const query = qs.stringify({
+        filters: {
+          user_id: {
+            $eq: user,
+          },
+        },
+        populate: ["log", "log.keys", "log.keys.values"],
+      });
+
+      // Obtener el log del usuario actual, si es 0 obtendra el log general de usuarios que no han iniciado sesion
+      const { data } = await this.$axios.get(
+        `${this.$config.apiUrl}/api/logs?${query}`
+      );
+
+      if (data.data.length == 0) {
+        await this.$axios.post(`${this.$config.apiUrl}/api/logs`, {
+          data: {
+            user_id: user,
+            log: {
+              keys: [key],
+            },
+          },
+        });
+      }
+
+      // Si el log existe
+      if (data.data.length > 0) {
+        // Obtener el log del usuario actual
+        const log_id = data.data[0].id;
+
+        // Obtener las keys del log del usuario actual
+        let key_data = data.data[0].attributes.log.keys;
+
+        // Verificar si el usuario actual ya ha activado la key de seleccionar un contenido
+        let indexKey = key_data.find(
+          (key) => key.action == "Finalizó un contenido"
+        );
+
+        // Si la key no existe, crearla
+        if (indexKey == undefined) {
+          key_data.push(key);
+        }
+
+        // Si la key existe, obtener el index de la key
+        if (indexKey != undefined) {
+          let index = key_data.indexOf(indexKey);
+
+          // Agregar un nuevo valor a la key
+          key_data[index].values.push({
+            grandparent: this.curso.attributes.titulo,
+            parent: "Modulo " + modulo.titulo,
+            log_key: contenido.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          });
+        }
+
+        await this.$axios.put(`${this.$config.apiUrl}/api/logs/${log_id}`, {
+          data: {
+            log: {
+              keys: key_data,
+            },
+          },
+        });
+      }
+
       const contenidosFinalizados = JSON.parse(
         localStorage.getItem("contenidosFinalizados")
       );
@@ -391,6 +670,8 @@ export default {
           "contenidosFinalizados",
           JSON.stringify(this.metaContenidosFinalizados)
         );
+
+        this.totalContenidosFinalizados();
       }
     },
     nFinalizados(id_modulo) {
@@ -407,7 +688,8 @@ export default {
 
       return id;
     },
-    halfHasFinalizados() {
+    // Verificar si el total de contenidos fue finalizado
+    async totalContenidosFinalizados() {
       const contenidosFinalizados =
         localStorage.getItem("contenidosFinalizados") != null
           ? JSON.parse(localStorage.getItem("contenidosFinalizados"))
@@ -418,13 +700,94 @@ export default {
         (contenido) => contenido.id_curso == this.curso.id
       );
 
-      if (
-        (contenidosFinalizadosCurso.length * 100) / this.contenidosLength >=
-        50
-      ) {
-        this.dialogValoracion = true;
-      } else {
-        this.dialogValoracion = false;
+      if (contenidosFinalizadosCurso.length == this.contenidosLength) {
+        // Obtener el usuario actual, si no esta logueado, definir 0 como usuario
+        const user =
+          this.$cookies.get("user") != null
+            ? JSON.parse(this.$cookies.get("user")).toString()
+            : "0";
+
+        // Crear un objeto con los datos a guardar
+        const key = {
+          action: "Finalizó un curso",
+          values: [
+            {
+              grandparent: "",
+              parent: "",
+              log_key: this.curso.attributes.titulo,
+              time: moment().unix().toString(),
+              ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+            },
+          ],
+        };
+
+        const qs = require("qs");
+
+        const query = qs.stringify({
+          filters: {
+            user_id: {
+              $eq: user,
+            },
+          },
+          populate: ["log", "log.keys", "log.keys.values"],
+        });
+
+        // Obtener el log del usuario actual, si es 0 obtendra el log general de usuarios que no han iniciado sesion
+        const { data } = await this.$axios.get(
+          `${this.$config.apiUrl}/api/logs?${query}`
+        );
+
+        if (data.data.length == 0) {
+          await this.$axios.post(`${this.$config.apiUrl}/api/logs`, {
+            data: {
+              user_id: user,
+              log: {
+                keys: [key],
+              },
+            },
+          });
+        }
+
+        // Si el log existe
+        if (data.data.length > 0) {
+          // Obtener el log del usuario actual
+          const log_id = data.data[0].id;
+
+          // Obtener las keys del log del usuario actual
+          let key_data = data.data[0].attributes.log.keys;
+
+          // Verificar si el usuario actual ya ha activado la key de seleccionar un contenido
+          let indexKey = key_data.find(
+            (key) => key.action == "Finalizó un curso"
+          );
+
+          // Si la key no existe, crearla
+          if (indexKey == undefined) {
+            key_data.push(key);
+          }
+
+          // Si la key existe, obtener el index de la key
+          if (indexKey != undefined) {
+            let index = key_data.indexOf(indexKey);
+
+            // Agregar un nuevo valor a la key
+            key_data[index].values.push({
+              grandparent: "",
+              parent: "",
+              log_key: this.curso.attributes.titulo,
+              time: moment().unix().toString(),
+              ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+            });
+          }
+
+          await this.$axios.put(`${this.$config.apiUrl}/api/logs/${log_id}`, {
+            data: {
+              log: {
+                keys: key_data,
+              },
+            },
+          });
+        }
       }
     },
   },
@@ -443,7 +806,7 @@ export default {
 
     const curso = await context.$axios
       .$get(
-        `${context.$config.apiUrl}/api/cursos/${context.params.id}?${query}`
+        `${context.$config.apiUrl}/api/cursos/${context.params.slug}?${query}`
       )
       .then((res) => res.data);
     return { curso };
@@ -455,7 +818,6 @@ export default {
         return acc + modulo.contenidos.length;
       }, 0);
     },
-
   },
 };
 </script>

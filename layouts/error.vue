@@ -1,41 +1,73 @@
 <template>
   <v-app dark>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
-    <NuxtLink to="/">
-      Home page
-    </NuxtLink>
+    <!-- PAGINA NO ENCONTRADA -->
+    <div
+      v-if="error.statusCode === 404"
+      class="h-full w-full py-8 px-8 flex justify-center"
+    >
+      <div>
+        <span
+          class="block text-base lg:text-3xl text-center font-bold uppercase"
+          >Página no encontrada!</span
+        >
+        <span class="block text-base lg:text-2xl text-center"
+          >Al parecer la página a la que intentas acceder no existe.</span
+        >
+        <div class="flex justify-center my-4">
+          <v-img src="/illustration_404.svg" class="h-80 w-full" contain></v-img>
+        </div>
+        <span class="block text-base lg:text-2xl text-center"
+          >Verifica la dirección URL o accede nuevamente a
+          <a href="https://www.corparauco.cl">Corparauco.cl</a>.</span
+        >
+      </div>
+    </div>
+    <!-- PAGINA NO ENCONTRADA -->
+
+    <!-- ERROR -->
+    <div v-else class="h-full w-full py-8 flex justify-center">
+      <div>
+        <span
+          class="block text-base lg:text-3xl text-center font-bold uppercase"
+          >!Ups!</span
+        >
+        <span class="block text-base lg:text-2xl text-center"
+          >Al parecer ha ocurrido un problema</span
+        >
+        <v-img src="/illustration_error.svg" class="h-80 w-full" contain></v-img>
+        <span class="block text-base lg:text-2xl text-center"
+          >Vuelva a recargar la página.</span
+        >
+      </div>
+    </div>
+    <!-- ERROR -->
   </v-app>
 </template>
 
 <script>
 export default {
-  name: 'EmptyLayout',
-  layout: 'empty',
+  name: "EmptyLayout",
+  layout: "empty",
   props: {
     error: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
-  data () {
+  data() {
     return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
-    }
+      pageNotFound: "404 Not Found",
+      otherError: "An error occurred",
+    };
   },
-  head () {
+  head() {
     const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
+      this.error.statusCode === 404 ? this.pageNotFound : this.otherError;
     return {
-      title
-    }
-  }
-}
+      title,
+    };
+  },
+};
 </script>
 
 <style scoped>

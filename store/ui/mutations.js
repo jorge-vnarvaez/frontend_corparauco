@@ -16,5 +16,8 @@ export default {
     },
     hideMenu(state) {
         state.menu = false;
+    },
+    setScales(state, data) {
+        state.responsive_chart_scale = data;
     }
 }

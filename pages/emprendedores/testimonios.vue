@@ -114,7 +114,7 @@
         </p>
         <p class="text-lg font-thin font-italic text-gray-500">
           <span>{{ testimonio.region }}</span
-          ><span>{{ testimonio.comuna }}</span>
+          >, <span>{{ testimonio.comuna }}</span>
         </p>
 
         <div

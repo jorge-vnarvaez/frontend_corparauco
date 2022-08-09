@@ -29,3 +29,7 @@ export const getProvincias = (state) => (codigo_region) => {
 export const getComunas = (state) => (codigo_provincia) => {
   return state.comunas.filter((comuna) => comuna.codigo_padre == codigo_provincia);
 };
+
+export const getScales = (state) => {
+  return state.responsive_chart_scale;
+}

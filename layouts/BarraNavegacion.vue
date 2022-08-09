@@ -5,11 +5,9 @@
       ' w-full mb-3 grid grid-cols-12 flex flex-col lg:space-y-0'
     "
   >
-    <div
-      class="flex lg:flex-row flex-col items-center col-span-12"
-    >
+    <div class="flex lg:flex-row flex-col items-center col-span-12 justify-between">
       <!-- [Logo and Menu] -->
-      <div class="flex px-[30px] lg:px-[0px] col-span-4">
+      <div class="flex lg:px-[0px] col-span-4">
         <nuxt-link v-if="appLogo" to="/"
           ><v-img
             class="w-64 h-32"
@@ -59,19 +57,64 @@
         class="flex col-span-4 items-center lg:flex-row flex-col justify-end"
       >
         <div>
-          <nuxt-link class="mr-4" :to="{ name: 'home' }">
-            <span class="text-xl">
-              {{ user.nombre }} {{ user.apellidoPaterno }}
-              {{ user.apellidoMaterno }}
-            </span>
-          </nuxt-link>
+          <span class="text-xl">
+            {{ user.nombre }} {{ user.apellidoPaterno }}
+            {{ user.apellidoMaterno }}
+          </span>
         </div>
-        <div>
+        <v-menu offset-y offset-x left nudge-right="20" nudge-bottom="10">
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon class="cursor-pointer" v-on="on" v-bind="attrs"
+              >mdi-chevron-down</v-icon
+            >
+          </template>
+          <v-list class="w-40">
+            <v-list-item v-for="option in menu_options" :key="option.id">
+              <nuxt-link :to="{ name: option.link }" class="flex">
+                <button class="flex justify-between align-center">
+                  <p class="mb-0 text-sm text-neutral-900">{{ option.name }}</p>
+                  <v-icon>{{ option.icon }}</v-icon>
+                </button>
+              </nuxt-link>
+
+              
+            </v-list-item>
+            <v-list-item v-if="user.is_admin">
+              <nuxt-link  :to="{ name: 'admin' }" class="flex">
+                <button class="flex justify-between align-center">
+                  <p class="mb-0 text-sm text-neutral-900">Análisis</p>
+                  <v-icon>mdi-chart-line</v-icon>
+                </button>
+              </nuxt-link>
+            </v-list-item>
+
+            <v-list-item v-if="user.is_admin">
+              <nuxt-link v-if="user.is_admin" :to="{ name: 'manual_de_usuario' }" class="flex">
+                <button class="flex justify-between align-center">
+                  <p class="mb-0 text-sm text-neutral-900">Manual usuario</p>
+                  <v-icon>mdi-help-circle-outline</v-icon>
+                </button>
+              </nuxt-link>
+            </v-list-item>
+           
+            <v-list-item>
+              <button
+                @click="desconectar"
+                class="flex justify-between align-center"
+              >
+                <p class="mb-0 text-sm text-neutral-900">Desconectar</p>
+                <v-icon>mdi-logout-variant</v-icon>
+              </button>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <!-- <div>
           <button @click="desconectar" class="flex items-center">
             <p class="mb-0">Desconectar</p>
             <v-icon>mdi-logout-variant</v-icon>
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -81,7 +124,9 @@
     >
       <!-- [LOGIN MOBILE] -->
       <div
-        v-if="($vuetify.breakpoint.mobile ? true : false) && (userStatus == false)"
+        v-if="
+          ($vuetify.breakpoint.mobile ? true : false) && userStatus == false
+        "
         class="flex flex-col lg:flex-row py-4 bg-blue-900 justify-end items-end space-y-4 lg:space-y-0 lg:col-span-3 col-span-12 w-full"
       >
         <div
@@ -98,7 +143,9 @@
       </div>
 
       <div
-        v-if="($vuetify.breakpoint.mobile ? true : false) && (userStatus == false)"
+        v-if="
+          ($vuetify.breakpoint.mobile ? true : false) && userStatus == false
+        "
         class="flex flex-col lg:flex-row py-4 bg-teal-700 justify-end items-end space-y-4 lg:space-y-0 lg:col-span-3 col-span-12 w-full"
       >
         <div
@@ -332,6 +379,10 @@ export default {
       is_logged: false,
       showOptions: false,
       user: null,
+      menu_options: [
+        { id: 0, name: 'Panel', icon: 'mdi-view-dashboard', link: 'home' },
+      ],
+      hover: false,
     };
   },
   async updated() {

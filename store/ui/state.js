@@ -1977,4 +1977,5 @@ export default () => ({
     comunas: [],
     options: false,
     menu: false,
+    responsive_chart_scale: 0,
 })

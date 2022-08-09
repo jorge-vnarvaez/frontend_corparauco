@@ -33,7 +33,7 @@
               required
               :rules="reglaNotNull"
               placeholder="Correo electronico"
-              class="mt-1 block w-full border-none bg-gray-100 h-11 rounded-xl shadow-lg focus:ring-0"
+              class="mt-1 block w-full border-none bg-gray-100 h-11 rounded-lg shadow-lg focus:ring-0"
               solo
               flat
             ></v-text-field>
@@ -44,14 +44,14 @@
               required
               :rules="reglaNotNull"
               placeholder="Contraseña"
-              class="mt-12 block w-full border-none bg-gray-100 h-11 rounded-xl shadow-lg focus:ring-0 mb-4"
+              class="mt-12 block w-full border-none bg-gray-100 h-11 rounded-lg shadow-lg focus:ring-0 mb-4"
               solo
               flat
             ></v-text-field>
 
-                      <span v-if="error.value" class="text-red-400 block mt-12 px-3">{{
-            error.errorMsg
-          }}</span>
+            <span v-if="error.value" class="text-red-400 block mt-12 px-3">{{
+              error.errorMsg
+            }}</span>
 
             <button
               type="submit"
@@ -70,6 +70,12 @@
                   Registrate aquí
                 </nuxt-link>
               </div>
+            </div>
+
+            <div class="my-4 flex justify-center">
+              <nuxt-link :to="{ name: 'contraseña_olvidada' }"
+                >¿Olvidaste tu contraseña?</nuxt-link
+              >
             </div>
           </v-form>
         </div>

@@ -16,7 +16,7 @@
         @click="reescribirRecomendaciones(curso)"
       >
         <!-- Reemplazar por slug -->
-        <nuxt-link :to="{ name: 'cursos-id', params: { id: curso.id } }">
+        <nuxt-link :to="{ name: 'cursos-slug', params: { slug: curso.attributes.slug } }">
           <v-img
             v-if="curso.attributes.imagen_referencia.data"
             width="200"
@@ -60,8 +60,8 @@ export default {
           organizadores: {
             titulo: {
               $eq: this.recomendaciones.map((item) => {
-                if (Object.values(item)[1] >= 2) {
-                  return Object.keys(item)[1];
+                if (Object.values(item)[2] >= 3) {
+                  return Object.keys(item)[2];
                 }
               }),
             },

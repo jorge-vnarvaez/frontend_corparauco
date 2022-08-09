@@ -11,7 +11,10 @@
             class="py-3"
             color="blue-grey darken-4"
             ><v-icon color="white">mdi-web</v-icon
-            ><a class="ml-2 py-4" :href="programa.attributes.pagina_programa" target="_blank"
+            ><a
+              class="ml-2 py-4"
+              :href="programa.attributes.pagina_programa"
+              target="_blank"
               ><span class="text-white">Ver página web del programa</span></a
             ></v-btn
           >
@@ -51,7 +54,103 @@
 </template>
 
 <script>
+
+import moment from 'moment';
+
 export default {
+  mounted() {
+    this.log();
+  },
+  methods: {
+    async log() {
+      // Obtener el usuario actual, si no esta logueado, definir 0 como usuario
+      const user =
+        this.$cookies.get("user") != null
+          ? JSON.parse(this.$cookies.get("user")).toString()
+          : "0";
+
+      // Crear un objeto con los datos a guardar
+      const key = {
+        action: "Visitó un programa",
+        values: [
+          {
+            grandparent: this.organizacion,
+            log_key: this.programa.attributes.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          },
+        ],
+      };
+
+      const qs = require("qs");
+
+      const query = qs.stringify({
+        filters: {
+          user_id: {
+            $eq: user,
+          },
+        },
+        populate: ["log", "log.keys", "log.keys.values"],
+      });
+
+      // Obtener el log del usuario actual
+      const { data } = await this.$axios.get(
+        `${this.$config.apiUrl}/api/logs?${query}`
+      );
+
+      // Si el log no existe, crearlo
+      if (data.data.length == 0) {
+        await this.$axios.post(`${this.$config.apiUrl}/api/logs`, {
+          data: {
+            user_id: user,
+            log: {
+              keys: [key],
+            },
+          },
+        });
+      }
+
+      // Si el log existe
+      if (data.data.length > 0) {
+        // Obtener el log del usuario actual
+        const log_id = data.data[0].id;
+
+        // Obtener las keys del log del usuario actual
+        let key_data = data.data[0].attributes.log.keys;
+
+        // Verificar si el usuario actual ya ha activado la key de visitar un curso
+        let indexKey = key_data.find(
+          (key) => key.action == "Visitó un programa"
+        );
+
+        // Si la key no existe, crearla
+        if (indexKey == undefined) {
+          key_data.push(key);
+        }
+
+        // Si la key existe, obtener el index de la key
+        if (indexKey != undefined) {
+          let index = key_data.indexOf(indexKey);
+
+          // Agregar un nuevo valor a la key
+          key_data[index].values.push({
+            grandparent: this.organizacion,
+            log_key: this.programa.attributes.titulo,
+            time: moment().unix().toString(),
+            ts: moment().format("YYYY-MM-DD HH:mm:ss"),
+          });
+        }
+
+        await this.$axios.put(`${this.$config.apiUrl}/api/logs/${log_id}`, {
+          data: {
+            log: {
+              keys: key_data,
+            },
+          },
+        });
+      }
+    },
+  },
   async asyncData(context) {
     const qs = require("qs");
 
@@ -67,6 +166,17 @@ export default {
     return { programa };
   },
   computed: {
+    organizacion() {
+      // crear un regex pattern con this.programa.attributes.pagina_programa
+      // para saber si corfo o sercotec estan dentro de la variable
+      if (this.programa.attributes.pagina_programa.includes("corfo")) {
+        return "corfo";
+      } else if (
+        this.programa.attributes.pagina_programa.includes("sercotec")
+      ) {
+        return "sercotec";
+      }
+    },
     width() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
@@ -87,5 +197,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

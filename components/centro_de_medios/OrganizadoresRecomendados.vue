@@ -1,6 +1,6 @@
 <template>
   <div class="mt-20 px-[10px] lg:px-[32px]" v-if="organizadores.length > 0">
-    <p class="font-bold text-3xl mr-6 mb-6">Categorías recomendadas para tí</p>
+    <p class="font-bold text-3xl mr-6 mb-6">Categorías recomendadas para ti</p>
     <div
       class="flex lg:grid lg:grid-cols-12 lg:gap-y-6 lg:gap-x-8 space-x-8 lg:space-x-0 no-scrollbar overflow-x-scroll"
     >
