@@ -260,6 +260,11 @@
 
 <script>
 export default {
+  async asyncData(context) {
+    await context.store.dispatch("ui/loadRegiones");
+    await context.store.dispatch("ui/loadProvincias");
+    await context.store.dispatch("ui/loadComunas");
+  },
   data() {
     return {
       codigoPais: null,

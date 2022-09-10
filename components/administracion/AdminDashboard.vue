@@ -186,7 +186,6 @@ export default {
 
     this.totalEmprendedores = this.emprendedoresData.data.length;
 
-
     // [PROGRAMAS]
     this.programasData = await fetch(
       `${this.$config.apiUrl}/api/programas?${query_programas}`

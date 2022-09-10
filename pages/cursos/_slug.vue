@@ -815,7 +815,7 @@ export default {
   computed: {
     contenidosLength() {
       return this.curso.attributes.modulos.reduce((acc, modulo) => {
-        return acc + modulo.contenidos.length;
+          return acc + modulo.contenidos.length;
       }, 0);
     },
   },
