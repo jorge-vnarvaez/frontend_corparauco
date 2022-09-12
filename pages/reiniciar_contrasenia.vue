@@ -15,8 +15,7 @@ export default {
     },
     async asyncData() {
         // get code from route params
-        const code = this.$route.params.code
-        this.code = code;
+        console.log(this.$route);
     }
 }
 </script>

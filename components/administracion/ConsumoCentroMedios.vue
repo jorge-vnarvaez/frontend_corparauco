@@ -63,10 +63,9 @@
           <!-- Fechas -->
           <chart-g v-for="(fecha, index) in consumosByDate" :key="fecha[0]">
             <chart-text
-              v-if="consumosByDate.length >= 25 ? index % 3 == 0 : true"
+              v-if="index % 4 === 0"
               :width="scales.fechas.bandwidth()"
-              writing-mode="tb"
-              :ty="10"
+              :ty="15"
               :bx="scales.fechas(index)"
               :font-size="7"
               >{{ fecha[0] }}</chart-text
@@ -127,6 +126,7 @@ export default {
   watch: {
     consumosByDate(newValue) {
       this.values = [];
+
       this.$store.dispatch("ui/printScales", this.max_value);
       this.values = this.$store.getters["ui/getScales"];
     },

@@ -1,7 +1,40 @@
 <template>
-  <div class="mt-8">
+  <div>
+    <div class="flex justify-between">
+      <span class="block text-gray-400 font-bold"
+        >Visitas SERCOTEC / CORFO</span
+      >
+      <div class="w-24">
+        <v-select
+          :items="years"
+          v-model="year_selected"
+          solo
+          flat
+          dense
+          outlined
+          hide-details
+        >
+        </v-select>
+      </div>
+    </div>
+    <div class="h-12">
+      <!-- TAXONOMIES -->
+      <div class="mt-4">
+        <div class="flex align-center space-x-2">
+          <div class="block w-6 h-2 bg-[#1E90FF]"></div>
+          <span class="text-sm">Visualizaciones sercotec</span>
+        </div>
+      </div>
+      <div class="mt-1">
+        <div class="flex align-center space-x-2">
+          <div class="block w-6 h-2 bg-[#F44336]"></div>
+          <span class="text-sm">Visualizaciones corfo</span>
+        </div>
+      </div>
+      <!-- TAXONOMIES -->
+    </div>
     <!-- Gráfico visualizaciones sercotec / corfo-->
-    <chart-svg :contain="true">
+    <chart-svg v-if="max_value > 0" :contain="true">
       <chart-g
         :scales="{
           fechas: {
@@ -33,7 +66,10 @@
       >
         <template #default="{ scales }">
           <!-- Lineas horizontales -->
-          <chart-g v-for="(value, index) in values" :key="index + 'lineas_horizontales'">
+          <chart-g
+            v-for="(value, index) in values"
+            :key="index + 'lineas_horizontales'"
+          >
             <chart-rect
               fill="#eeeeee"
               :width="plotWidth"
@@ -104,6 +140,13 @@
       </chart-g>
     </chart-svg>
     <!-- Gráfico visualizaciones sercotec / corfo-->
+
+    <div
+      v-if="max_value == 0"
+      class="flex align-center w-full justify-center h-[280px]"
+    >
+      <p class="text-center text-gray-500">No hay datos para mostrar</p>
+    </div>
   </div>
 </template>
 
@@ -118,11 +161,17 @@ import ChartRect from "../PrimeSvg/ChartRect.vue";
 export default {
   data() {
     return {
+      year_selected: null,
       values: [],
       visualizaciones_corfo: [],
+      log_visitas_corfo: [],
+      log_visitas_sercotec: [],
       visualizaciones_sercotec: [],
       meses_indexes: [],
     };
+  },
+  mounted() {
+    this.year_selected = this.current_year;
   },
   components: {
     ChartSvg,
@@ -151,8 +200,120 @@ export default {
         ? 80
         : this.max_value * 20;
     },
+    current_year() {
+      return new Date().getFullYear();
+    },
+    years() {
+      let years = [];
+
+      let current_year = this.current_year;
+
+      if (current_year <= 2024) {
+        for (let i = 0; i < 3; i++) {
+          years.push(current_year - i);
+        }
+      } else {
+        for (let i = 0; i < 7; i++) {
+          years.push(current_year - i);
+        }
+      }
+
+      return current_year != 2022 ? years : [2022, 2021];
+    },
   },
-  async fetch() { 
+  watch: {
+    year_selected(newValue) {
+      if (newValue != this.current_year) {
+        this.segmentarTodos(newValue);
+      } else {
+        this.segmentarTodos(this.current_year);
+      }
+    },
+  },
+  methods: {
+    segmentarTodos(year) {
+      const initialMonth = moment()
+        .year(year)
+        .month(0)
+        .startOf("month")
+        .month();
+
+      const currentMonth = moment().year(year).month();
+
+      // create an array of months starting on august 1st
+      const months = Array.from(
+        { length: currentMonth - initialMonth + 1 },
+        (_, i) => {
+          let m = moment()
+            .year(year)
+            .month(initialMonth + i);
+          return {
+            start: m.startOf("month").unix(),
+            end: m.endOf("month").unix(),
+          };
+        }
+      );
+
+      const logsByDateCorfo = months
+        .map((date) => {
+          return {
+            [moment.unix(date.start).format("MMMM")]: this.log_visitas_corfo
+              .flat()
+              .filter((log) => {
+                return log.time >= date.start && log.time <= date.end;
+              }).length,
+          };
+        })
+        .reduce((acc, curr) => {
+          return { ...acc, ...curr };
+        }, {});
+
+      const logsByDateSercotec = months
+        .map((date) => {
+          return {
+            [moment.unix(date.start).format("MMMM")]: this.log_visitas_sercotec
+              .flat()
+              .filter((log) => {
+                return log.time >= date.start && log.time <= date.end;
+              }).length,
+          };
+        })
+        .reduce((acc, curr) => {
+          return { ...acc, ...curr };
+        }, {});
+
+      const logsByDateCorfoArray = Object.keys(logsByDateCorfo)
+        .map((key) => {
+          return [key, logsByDateCorfo[key]];
+        })
+        .reduce((acc, curr) => {
+          return [...acc, curr];
+        }, []);
+
+      const logsByDateSercotecArray = Object.keys(logsByDateSercotec)
+        .map((key) => {
+          return [key, logsByDateSercotec[key]];
+        })
+        .reduce((acc, curr) => {
+          return [...acc, curr];
+        }, []);
+
+      this.visualizaciones_corfo = logsByDateCorfoArray;
+      this.visualizaciones_sercotec = logsByDateSercotecArray;
+
+      const length = this.visualizaciones_sercotec.length;
+      const half = Math.floor(length / 2);
+      const last_half = half - 1;
+      const last = length - 1;
+
+      if (length % 2 == 1) {
+        this.meses_indexes = [0, half, last];
+      } else {
+        this.meses_indexes = [0, half, last_half, last];
+      }
+    },
+  },
+  async fetch() {
     moment.locale("es");
 
     const qs = require("qs");
@@ -172,94 +333,20 @@ export default {
     });
 
     // from log_visitas filter the log keys values that have a granparent corfo and not sercotec
-    const log_visitas_corfo = log_visitas.flat().map((key) => {
+    this.log_visitas_corfo = log_visitas.flat().map((key) => {
       return key.values.filter((value) => {
         return value.grandparent === "corfo";
       });
     });
 
-    const log_visitas_sercotec = log_visitas.flat().map((key) => {
+    this.log_visitas_sercotec = log_visitas.flat().map((key) => {
       return key.values.filter((value) => {
         return value.grandparent === "sercotec";
       });
     });
 
-    const current_year = new Date().getFullYear();
-
-    const initialMonth = moment(current_year + "-01-01").month();
-    const currentMonth = moment().month();
-
-    // create an array of months starting on august 1st
-    const months = Array.from(
-      { length: currentMonth - initialMonth + 1 },
-      (_, i) => {
-        let m = moment().month(initialMonth + i);
-        return {
-          start: m.startOf("month").unix(),
-          end: m.endOf("month").unix(),
-        };
-      }
-    );
-
-    const logsByDateCorfo = months
-      .map((date) => {
-        return {
-          [moment.unix(date.start).format("MMMM")]: log_visitas_corfo
-            .flat()
-            .filter((log) => {
-              return log.time >= date.start && log.time <= date.end;
-            }).length,
-        };
-      })
-      .reduce((acc, curr) => {
-        return { ...acc, ...curr };
-      }, {});
-
-    const logsByDateSercotec = months
-      .map((date) => {
-        return {
-          [moment.unix(date.start).format("MMMM")]: log_visitas_sercotec
-            .flat()
-            .filter((log) => {
-              return log.time >= date.start && log.time <= date.end;
-            }).length,
-        };
-      })
-      .reduce((acc, curr) => {
-        return { ...acc, ...curr };
-      }, {});
-
-    const logsByDateCorfoArray = Object.keys(logsByDateCorfo)
-      .map((key) => {
-        return [key, logsByDateCorfo[key]];
-      })
-      .reduce((acc, curr) => {
-        return [...acc, curr];
-      }, []);
-
-    const logsByDateSercotecArray = Object.keys(logsByDateSercotec)
-      .map((key) => {
-        return [key, logsByDateSercotec[key]];
-      })
-      .reduce((acc, curr) => {
-        return [...acc, curr];
-      }, []);
-
-    this.visualizaciones_corfo = logsByDateCorfoArray;
-    this.visualizaciones_sercotec = logsByDateSercotecArray;
-
-    const length = this.visualizaciones_sercotec.length;
-    const half = Math.floor(length / 2);
-    const last_half = half - 1;
-    const last = length - 1;
-
-    if(length % 2 == 1) {
-      this.meses_indexes = [0, half, last];
-    } else {
-      this.meses_indexes = [0, half, last_half, last];
-    }
-
-    this.$store.dispatch('ui/printScales', this.max_value);
+    this.segmentarTodos(this.current_year);
+    this.$store.dispatch("ui/printScales", this.max_value);
     this.values = this.$store.getters["ui/getScales"];
   },
 };

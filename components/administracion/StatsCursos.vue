@@ -2,7 +2,7 @@
   <div class="grid grid-cols-12">
     <div
       class="col-span-12 xl:col-span-6 bg-white rounded-lg shadow-md px-8 py-6"
-      v-if="data_visualizados.length > 0 && data_finalizados.length > 0"
+      v-if="data_visualizados.length > 0"
     >
       <div class="flex justify-between align-center">
         <span class="block text-gray-400 font-bold mb-4"
@@ -10,17 +10,47 @@
         >
 
         <!-- BOTONES -->
-        <div class="w-48">
-          <v-select
-            :items="filtro"
-            v-model="filtroFechaSeleccionado"
-            solo
-            flat
-            dense
-            outlined
-            hide-details
-          >
-          </v-select>
+        <div class="w-48 flex align-center justify-end space-x-4">
+          <div class="w-24">
+            <v-select
+              :items="years"
+              v-model="year_selected"
+              solo
+              flat
+              dense
+              outlined
+              hide-details
+            >
+            </v-select>
+          </div>
+
+          <div v-if="current_year == year_selected" class="w-40">
+            <v-select
+              :items="filtro"
+              v-model="filtroFechaSeleccionado"
+              solo
+              flat
+              dense
+              outlined
+              hide-details
+            >
+            </v-select>
+          </div>
+
+          <div v-if="current_year != year_selected" class="w-40">
+            <v-select
+              :items="filtro_year"
+              v-model="filtroMesSeleccionado"
+              item-text="name"
+              item-value="id"
+              solo
+              flat
+              dense
+              outlined
+              hide-details
+            >
+            </v-select>
+          </div>
         </div>
         <!-- BOTONES -->
       </div>
@@ -124,14 +154,9 @@
               :key="fecha[0]"
             >
               <chart-text
-                v-if="
-                  visualizacionesCursosByDate.length >= 25
-                    ? index % 3 == 0
-                    : true
-                "
+                v-if="index % 4 == 0"
                 :width="scales.fechas.bandwidth()"
-                writing-mode="tb"
-                :ty="10"
+                :ty="15"
                 :bx="scales.fechas(index)"
                 :font-size="8"
                 >{{ fecha[0] }}</chart-text
@@ -191,7 +216,70 @@ export default {
       data_finalizados: [],
       plotHeight: 140,
       filtroFechaSeleccionado: "Todos",
+      filtroMesSeleccionado: null,
       filtro: ["Hoy", "Esta semana", "Este mes", "Todos"],
+      filtro_year: [
+        {
+          id: 1,
+          name: "Enero",
+          value: "01",
+        },
+        {
+          id: 2,
+          name: "Febrero",
+          value: "02",
+        },
+        {
+          id: 3,
+          name: "Marzo",
+          value: "03",
+        },
+        {
+          id: 4,
+          name: "Abril",
+          value: "04",
+        },
+        {
+          id: 5,
+          name: "Mayo",
+          value: "05",
+        },
+        {
+          id: 6,
+          name: "Junio",
+          value: "06",
+        },
+        {
+          id: 7,
+          name: "Julio",
+          value: "07",
+        },
+        {
+          id: 8,
+          name: "Agosto",
+          value: "08",
+        },
+        {
+          id: 9,
+          name: "Septiembre",
+          value: "09",
+        },
+        {
+          id: 10,
+          name: "Octubre",
+          value: "10",
+        },
+        {
+          id: 11,
+          name: "Noviembre",
+          value: "11",
+        },
+        {
+          id: 12,
+          name: "Diciembre",
+          value: "12",
+        },
+      ],
       cursosData: this.defaultCursosData,
       organizadores: this.defaultOrganizadores,
       cursosPorOrganizador: [],
@@ -200,6 +288,7 @@ export default {
       finalizados: [],
       finalizadosCursosByDate: [],
       fechaPersonalizada: null,
+      year_selected: null,
     };
   },
   computed: {
@@ -208,6 +297,26 @@ export default {
     },
     plotWidth() {
       return this.$vuetify.breakpoint.mobile ? 240 : 400;
+    },
+    current_year() {
+      return new Date().getFullYear();
+    },
+    years() {
+      let years = [];
+
+      let current_year = this.current_year;
+
+      if (current_year <= 2024) {
+        for (let i = 0; i < 3; i++) {
+          years.push(current_year - i);
+        }
+      } else {
+        for (let i = 0; i < 7; i++) {
+          years.push(current_year - i);
+        }
+      }
+
+      return current_year != 2022 ? years : [2022];
     },
   },
   async fetch() {
@@ -263,6 +372,8 @@ export default {
         dow: 1, // Monday is the first day of the week
       },
     });
+
+    this.year_selected = this.current_year;
   },
   watch: {
     visualizacionesCursosByDate(newValue) {
@@ -289,12 +400,118 @@ export default {
           break;
       }
     },
+    year_selected(newValue) {
+      if(newValue == this.current_year) {
+        this.filtroFechaSeleccionado = "Todos";
+      } else {
+        this.filtroMesSeleccionado = 1;
+      }
+    },
+    filtroMesSeleccionado(newValue) {
+      this.consumosByDate = [];
+      this.segmentarPersonalizado();
+    },
   },
   methods: {
     max_visualizacionesCursosByDate() {
       return Math.max(
         ...this.visualizacionesCursosByDate.map((curso) => curso[1])
       );
+    },
+    segmentar(dates, format) {
+      // using the above array of days, filter the array of logs to only include logs that are within the start and end of the day
+      // use the day as the key in format MM/DD/YYYY, and the value as the number of logs
+      const logsVisualizacionesByDay = dates
+        .map((day) => {
+          return {
+            [moment.unix(day.start).format(format)]: this.visualizaciones
+              .flat()
+              .filter((curso) => {
+                return curso.time >= day.start && curso.time <= day.end;
+              }).length,
+          };
+        })
+        .reduce((acc, curr) => {
+          return {
+            ...acc,
+            ...curr,
+          };
+        }, {});
+
+      const logsVisualizacionesByDayArray = Object.keys(
+        logsVisualizacionesByDay
+      )
+        .map((key) => {
+          return [key, logsVisualizacionesByDay[key]];
+        })
+        .reduce((acc, curr) => {
+          return [...acc, curr];
+        }, []);
+
+      const logsFinalizadosByDay = dates
+        .map((date) => {
+          return {
+            [moment.unix(date.start).format("DD/MM/YYYY")]: this.finalizados
+              .flat()
+              .filter((curso) => {
+                return curso.time >= date.start && curso.time <= date.end;
+              }).length,
+          };
+        })
+        .reduce((acc, curr) => {
+          return {
+            ...acc,
+            ...curr,
+          };
+        }, {});
+
+      const logsFinalizadosByDayArray = Object.keys(logsFinalizadosByDay)
+        .map((key) => {
+          return [key, logsFinalizadosByDay[key]];
+        })
+        .reduce((acc, curr) => {
+          return [...acc, curr];
+        }, []);
+
+      this.visualizacionesCursosByDate = logsVisualizacionesByDayArray;
+      this.finalizadosCursosByDate = logsFinalizadosByDayArray;
+    },
+    segmentarPersonalizado() {
+      const year_selected = this.year_selected;
+
+      const selected_month = this.filtroMesSeleccionado;
+
+      const daysInMonth = Array.from(
+        {
+          length: moment()
+            .year(year_selected)
+            .month(selected_month)
+            .subtract(1, "month")
+            .daysInMonth(),
+        },
+        (v, k) => k + 1
+      );
+
+      const days = daysInMonth.map((day) => {
+        return {
+          start: moment()
+            .year(year_selected)
+            .month(selected_month)
+            .subtract(1, "month")
+            .date(day)
+            .startOf("day")
+            .unix(),
+          end: moment()
+            .year(year_selected)
+            .month(selected_month)
+            .subtract(1, "month")
+            .date(day)
+            .endOf("day")
+            .unix(),
+        };
+      });
+
+      this.segmentar(days, "DD/MM/YYYY");
     },
     segmentarHoy() {
       // create an array of hours for the current day, and for each hour, create an array with the start and end of the hour
@@ -514,73 +731,30 @@ export default {
     },
     segmentarTodos() {
       // create an array of dates starting on july 1st and ending on yesterday
-      const dates = Array.from(
-        { length: moment().diff(moment("2022-07-01", "YYYY-MM-DD"), "days") },
-        (v, k) => moment("2022-07-01").add(k, "days").format("YYYY-MM-DD")
+      const current_year = this.current_year;
+
+      const initialMonth = moment()
+        .year(current_year)
+        .month(0)
+        .startOf("month")
+        .month();
+      const currentMonth = moment().year(current_year).month();
+
+      // create an array of months starting on august 1st
+      const months = Array.from(
+        { length: currentMonth - initialMonth + 1 },
+        (_, i) => {
+          let m = moment()
+            .year(current_year)
+            .month(initialMonth + i);
+          return {
+            start: m.startOf("month").unix(),
+            end: m.endOf("month").unix(),
+          };
+        }
       );
 
-      // using the above array of dates, create and array wich has the start and end of each date
-      const datesSegmented = dates.map((date) => {
-        return {
-          start: moment(date).startOf("day").unix(),
-          end: moment(date).endOf("day").unix(),
-        };
-      });
-
-      const logsVisualizacionesByDay = datesSegmented
-        .map((date) => {
-          return {
-            [moment.unix(date.start).format("DD/MM/YYYY")]: this.visualizaciones
-              .flat()
-              .filter((curso) => {
-                return curso.time >= date.start && curso.time <= date.end;
-              }).length,
-          };
-        })
-        .reduce((acc, curr) => {
-          return {
-            ...acc,
-            ...curr,
-          };
-        }, {});
-
-      const logsFinalizadosByDay = datesSegmented
-        .map((date) => {
-          return {
-            [moment.unix(date.start).format("DD/MM/YYYY")]: this.finalizados
-              .flat()
-              .filter((curso) => {
-                return curso.time >= date.start && curso.time <= date.end;
-              }).length,
-          };
-        })
-        .reduce((acc, curr) => {
-          return {
-            ...acc,
-            ...curr,
-          };
-        }, {});
-
-      const logsVisualizacionesByDayArray = Object.keys(
-        logsVisualizacionesByDay
-      )
-        .map((key) => {
-          return [key, logsVisualizacionesByDay[key]];
-        })
-        .reduce((acc, curr) => {
-          return [...acc, curr];
-        }, []);
-
-      const logsFinalizadosByDayArray = Object.keys(logsFinalizadosByDay)
-        .map((key) => {
-          return [key, logsFinalizadosByDay[key]];
-        })
-        .reduce((acc, curr) => {
-          return [...acc, curr];
-        }, []);
-
-      this.visualizacionesCursosByDate = logsVisualizacionesByDayArray;
-      this.finalizadosCursosByDate = logsFinalizadosByDayArray;
+      this.segmentar(months, "MMMM");
     },
     segmentarCursosPorOrganizador() {
       for (let i = 0; i < this.organizadores.length; i++) {

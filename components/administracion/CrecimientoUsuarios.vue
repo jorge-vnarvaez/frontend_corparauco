@@ -1,7 +1,33 @@
 <template>
-  <div class="mt-8">
+  <div>
+    <div class="flex justify-between">
+      <span class="block text-gray-400 font-bold"
+        >Crecimiento histórico usuarios</span
+      >
+      <div class="w-24">
+        <v-select
+          :items="years"
+          v-model="year_selected"
+          solo
+          flat
+          dense
+          outlined
+          hide-details
+        >
+        </v-select>
+      </div>
+    </div>
+    <!-- TAXONOMIES -->
+    <div class="mt-4 h-12">
+      <div class="flex align-center space-x-2">
+        <div class="block w-6 h-2 bg-[#1E90FF]"></div>
+        <span class="text-sm">Usuarios nuevos</span>
+      </div>
+    </div>
+    <!-- TAXONOMIES -->
+
     <!-- Gráfico curva -->
-    <chart-svg :contain="true">
+    <chart-svg :contain="true" v-if="max_value > 0">
       <chart-g
         :scales="{
           meses: {
@@ -52,7 +78,7 @@
             :strokeWidth="0.8"
             stroke="#1E90FF"
             autoPoints
-            :data="register_dates.map((date) => date[1])"
+            :data="data.map((date) => date[1])"
             :width="plotWidth"
             :height="plotHeight"
             :curveStyle="'curveCardinal'"
@@ -62,7 +88,7 @@
           <!-- Valores de crecimiento -->
 
           <!-- Meses -->
-          <chart-g v-for="(fecha, index) in register_dates" :key="fecha[0]">
+          <chart-g v-for="(fecha, index) in data" :key="fecha[0]">
             <chart-text
               v-if="meses_indexes.includes(index)"
               :width="scales.meses.bandwidth()"
@@ -89,6 +115,13 @@
       </chart-g>
     </chart-svg>
     <!-- Gráfico curva -->
+
+    <div
+      v-if="max_value == 0"
+      class="flex align-center w-full justify-center h-[280px]"
+    >
+      <p class="text-center text-gray-500">No hay datos para mostrar</p>
+    </div>
   </div>
 </template>
 
@@ -103,9 +136,11 @@ import ChartRect from "../PrimeSvg/ChartRect.vue";
 export default {
   data() {
     return {
+      year_selected: null,
       values: [],
       register_dates: [],
       meses_indexes: [],
+      data: [],
     };
   },
   components: {
@@ -117,6 +152,16 @@ export default {
   },
   mounted() {
     moment.locale("es");
+    this.year_selected = this.current_year;
+  },
+  watch: {
+    year_selected(newValue) {
+      if (newValue != this.current_year) {
+        this.segmentarTodos(newValue);
+      } else {
+        this.segmentarTodos(this.current_year);
+      }
+    },
   },
   async fetch() {
     const data = await fetch(`${this.$config.apiUrl}/api/users`).then((res) =>
@@ -129,22 +174,27 @@ export default {
       return moment(user.createdAt).unix();
     });
 
-    this.segmentarTodos();
-    this.$store.dispatch('ui/printScales', this.max_value);
+    this.segmentarTodos(2022);
+    this.$store.dispatch("ui/printScales", this.max_value);
     this.values = this.$store.getters["ui/getScales"];
   },
   methods: {
-    segmentarTodos() {
-      const current_year = new Date().getFullYear();
+    segmentarTodos(year) {
+      const initialMonth = moment()
+        .year(year)
+        .month(0)
+        .startOf("month")
+        .month();
 
-      const initialMonth = moment(current_year + "-01-01").month();
-      const currentMonth = moment().month();
+      const currentMonth = moment().year(year).month();
 
       // create an array of months starting on august 1st
       const months = Array.from(
         { length: currentMonth - initialMonth + 1 },
         (_, i) => {
-          let m = moment().month(initialMonth + i);
+          let m = moment()
+            .year(year)
+            .month(initialMonth + i);
           return {
             start: m.startOf("month").unix(),
             end: m.endOf("month").unix(),
@@ -177,9 +227,8 @@ export default {
           return [...acc, curr];
         }, []);
 
-      this.register_dates = logsHistoricoCrecimiento;
-
-      const length = this.register_dates.length;
+      this.data = logsHistoricoCrecimiento;
+      const length = this.data.length;
       const half = Math.floor(length / 2);
       const last_half = half - 1;
       const last = length - 1;
@@ -193,7 +242,7 @@ export default {
   },
   computed: {
     max_value() {
-      return Math.max(...this.register_dates.map((date) => date[1]));
+      return Math.max(...this.data.map((date) => date[1]));
     },
     plotWidth() {
       return this.$vuetify.breakpoint.mobile ? 240 : 300;
@@ -204,6 +253,26 @@ export default {
         : this.max_value * 20 >= 80
         ? 80
         : this.max_value * 20;
+    },
+    current_year() {
+      return new Date().getFullYear();
+    },
+    years() {
+      let years = [];
+
+      let current_year = this.current_year;
+
+      if (current_year <= 2024) {
+        for (let i = 0; i < 3; i++) {
+          years.push(current_year - i);
+        }
+      } else {
+        for (let i = 0; i < 7; i++) {
+          years.push(current_year - i);
+        }
+      }
+
+      return current_year != 2022 ? years : [2022, 2021];
     },
   },
 };

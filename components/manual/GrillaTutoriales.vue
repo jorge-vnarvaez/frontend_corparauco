@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap mt-8 space-x-8" v-if="tutoriales">
+  <div class="flex flex-wrap mt-8 lg:space-x-8 spaace-y-8" v-if="tutoriales">
     <CoolLightBox  :items="tutoriales" :index="index" @close="index = null">
     </CoolLightBox>
 

@@ -74,17 +74,47 @@
         >
 
         <!-- BOTONES -->
-        <div class="w-48">
-          <v-select
-            :items="filtro"
-            v-model="filtroFechaSeleccionado"
-            solo
-            flat
-            dense
-            outlined
-            hide-details
-          >
-          </v-select>
+        <div class="w-48 flex align-center justify-end space-x-4">
+          <div class="w-24">
+            <v-select
+              :items="years"
+              v-model="year_selected"
+              solo
+              flat
+              dense
+              outlined
+              hide-details
+            >
+            </v-select>
+          </div>
+
+          <div v-if="current_year == year_selected" class="w-40">
+            <v-select
+              :items="filtro"
+              v-model="filtroFechaSeleccionado"
+              solo
+              flat
+              dense
+              outlined
+              hide-details
+            >
+            </v-select>
+          </div>
+
+          <div v-if="current_year != year_selected" class="w-40">
+            <v-select
+              :items="filtro_year"
+              v-model="filtroMesSeleccionado"
+              item-text="name"
+              item-value="id"
+              solo
+              flat
+              dense
+              outlined
+              hide-details
+            >
+            </v-select>
+          </div>
         </div>
         <!-- BOTONES -->
       </div>
@@ -123,6 +153,7 @@ export default {
   data() {
     return {
       filtroFechaSeleccionado: "Este mes",
+      filtroMesSeleccionado: null,
       colors: ["blue", "teal", "orange", "yellow"],
       text_colors: [
         "text-blue-400",
@@ -131,6 +162,68 @@ export default {
         "text-yellow",
       ],
       filtro: ["Hoy", "Esta semana", "Este mes", "Todos"],
+      filtro_year: [
+        {
+          id: 1,
+          name: "Enero",
+          value: "01",
+        },
+        {
+          id: 2,
+          name: "Febrero",
+          value: "02",
+        },
+        {
+          id: 3,
+          name: "Marzo",
+          value: "03",
+        },
+        {
+          id: 4,
+          name: "Abril",
+          value: "04",
+        },
+        {
+          id: 5,
+          name: "Mayo",
+          value: "05",
+        },
+        {
+          id: 6,
+          name: "Junio",
+          value: "06",
+        },
+        {
+          id: 7,
+          name: "Julio",
+          value: "07",
+        },
+        {
+          id: 8,
+          name: "Agosto",
+          value: "08",
+        },
+        {
+          id: 9,
+          name: "Septiembre",
+          value: "09",
+        },
+        {
+          id: 10,
+          name: "Octubre",
+          value: "10",
+        },
+        {
+          id: 11,
+          name: "Noviembre",
+          value: "11",
+        },
+        {
+          id: 12,
+          name: "Diciembre",
+          value: "12",
+        },
+      ],
       contenidosData: this.defaultContenidosData,
       organizadores: this.defaultOrganizadores,
       formatos: this.defaultFormatos,
@@ -141,10 +234,12 @@ export default {
       contenidoPopular: [],
       contenidoMenosPopular: [],
       consumosByDate: [],
+      year_selected: null,
     };
   },
   watch: {
     filtroFechaSeleccionado(newValue) {
+      this.consumosByDate = [];
       switch (newValue) {
         case "Hoy":
           this.segmentarHoy();
@@ -159,6 +254,17 @@ export default {
           this.segmentarTodos();
           break;
       }
+    },
+    year_selected(newValue) {
+      if(newValue == this.current_year) {
+        this.filtroFechaSeleccionado = "Este mes";
+      } else {
+        this.filtroMesSeleccionado = 1;
+      }
+    },
+    filtroMesSeleccionado(newValue) {
+      this.consumosByDate = [];
+      this.segmentarPersonalizado();
     },
   },
   async fetch() {
@@ -336,15 +442,15 @@ export default {
       }
     );
 
+    this.year_selected = this.current_year;
+
     this.segmentarLastMonth();
   },
   mounted() {
     this.segmentarContenidosPorOrganizador();
+    this.year_selected = this.current_year;
   },
   methods: {
-    ranking_up(cantidad, cantidad_plus) {
-      return cantidad - cantidad_plus <= 2 ? true : false;
-    },
     segmentar(dates, format) {
       // using the above array of days, filter the array of logs to only include logs that are within the start and end of the day
       // use the day as the key in format MM/DD/YYYY, and the value as the number of logs
@@ -408,6 +514,43 @@ export default {
         });
       });
     },
+    segmentarPersonalizado() {
+      const year_selected = this.year_selected;
+
+      const selected_month = this.filtroMesSeleccionado;
+
+      const daysInMonth = Array.from(
+        {
+          length: moment()
+            .year(year_selected)
+            .month(selected_month)
+            .subtract(1, "month")
+            .daysInMonth(),
+        },
+        (v, k) => k + 1
+      );
+
+      const days = daysInMonth.map((day) => {
+        return {
+          start: moment()
+            .year(year_selected)
+            .month(selected_month)
+            .subtract(1, "month")
+            .date(day)
+            .startOf("day")
+            .unix(),
+          end: moment()
+            .year(year_selected)
+            .month(selected_month)
+            .subtract(1, "month")
+            .date(day)
+            .endOf("day")
+            .unix(),
+        };
+      });
+
+      this.segmentar(days, "DD/MM/YYYY");
+    },
     segmentarHoy() {
       // create an array of hours for the current day, and for each hour, create an array with the start and end of the hour
       // the end of hour should have -1 minute to the hour
@@ -465,8 +608,12 @@ export default {
       );
       const days = daysInMonth.map((day) => {
         return {
-          start: moment().date(day).startOf("day").unix(),
-          end: moment().date(day).endOf("day").unix(),
+          start: moment()
+            .year(this.current_year)
+            .date(day)
+            .startOf("day")
+            .unix(),
+          end: moment().year(this.current_year).date(day).endOf("day").unix(),
         };
       });
 
@@ -474,16 +621,22 @@ export default {
     },
     segmentarTodos() {
       // create an array of dates starting on july 1st and ending on yesterday
-      const current_year = new Date().getFullYear();
+      const current_year = this.current_year;
 
-      const initialMonth = moment(current_year + "-01-01").month();
-      const currentMonth = moment().month();
+      const initialMonth = moment()
+        .year(current_year)
+        .month(0)
+        .startOf("month")
+        .month();
+      const currentMonth = moment().year(current_year).month();
 
       // create an array of months starting on august 1st
       const months = Array.from(
         { length: currentMonth - initialMonth + 1 },
         (_, i) => {
-          let m = moment().month(initialMonth + i);
+          let m = moment()
+            .year(current_year)
+            .month(initialMonth + i);
           return {
             start: m.startOf("month").unix(),
             end: m.endOf("month").unix(),
@@ -510,6 +663,26 @@ export default {
         default:
           return "col-span-4";
       }
+    },
+    current_year() {
+      return new Date().getFullYear();
+    },
+    years() {
+      let years = [];
+
+      let current_year = this.current_year;
+
+      if(current_year <= 2024){
+        for (let i = 0; i < 3; i++) {
+          years.push(current_year - i);
+        }
+      } else {
+        for (let i = 0; i < 7; i++) {
+          years.push(current_year - i);
+        }
+      }
+
+      return current_year != 2022 ? years : [2022];
     },
   },
 };

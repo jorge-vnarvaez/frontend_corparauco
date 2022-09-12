@@ -2,7 +2,22 @@
   <div class="grid grid-cols-12 lg:gap-x-8 gap-y-8">
     <div class="col-span-12 grid grid-cols-12 lg:gap-x-8 gap-y-8">
       <!-- TODOS LOS CURSOS -->
-      <div :class="col_span + ' bg-white py-6 px-8 rounded-lg shadow-md'">
+      <v-sheet
+        :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+        class="pa-3"
+        v-if="totalCursos == null"
+      >
+        <v-skeleton-loader
+          class="mx-auto"
+          max-width="300"
+          type="card"
+        ></v-skeleton-loader>
+      </v-sheet>
+
+      <div
+        v-else
+        :class="col_span + ' bg-white py-6 px-8 rounded-lg shadow-md'"
+      >
         <div class="flex align-center justify-between">
           <span class="block text-gray-400 font-bold">Todos los cursos</span>
           <v-icon color="blue-grey darken-4">mdi-school</v-icon>
@@ -133,17 +148,6 @@
       <div
         class="col-span-12 xl:col-span-6 bg-white px-8 py-6 rounded-lg shadow-md"
       >
-        <span class="block text-gray-400 font-bold"
-          >Crecimiento histórico usuarios</span
-        >
-        <!-- TAXONOMIES -->
-        <div class="mt-4 h-12">
-          <div class="flex align-center space-x-2">
-            <div class="block w-6 h-2 bg-[#1E90FF]"></div>
-            <span class="text-sm">Usuarios nuevos</span>
-          </div>
-        </div>
-        <!-- TAXONOMIES -->
         <crecimiento-usuarios />
       </div>
       <!-- CRECIMIENTO USUARIOS -->
@@ -152,26 +156,6 @@
       <div
         class="col-span-12 xl:col-span-6 bg-white px-8 py-6 rounded-lg shadow-md"
       >
-        <span class="block text-gray-400 font-bold"
-          >Visitas SERCOTEC / CORFO</span
-        >
-        <div class="h-12">
-          <!-- TAXONOMIES -->
-          <div class="mt-4">
-            <div class="flex align-center space-x-2">
-              <div class="block w-6 h-2 bg-[#1E90FF]"></div>
-              <span class="text-sm">Visualizaciones sercotec</span>
-            </div>
-          </div>
-          <div class="mt-1">
-            <div class="flex align-center space-x-2">
-              <div class="block w-6 h-2 bg-[#F44336]"></div>
-              <span class="text-sm">Visualizaciones corfo</span>
-            </div>
-          </div>
-          <!-- TAXONOMIES -->
-        </div>
-
         <stats-programas />
       </div>
       <!-- STATS PROGRAMAS -->
@@ -211,6 +195,11 @@ export default {
     "totalProgramasCorfo",
     "totalProgramasSercotec",
   ],
+  data() {
+    return {
+      loaded: false,
+    };
+  },
   mounted() {
     moment.locale("es");
   },
