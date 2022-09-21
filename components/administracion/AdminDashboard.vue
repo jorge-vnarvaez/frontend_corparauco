@@ -10,7 +10,7 @@
           v-for="tab in tabs"
           :key="tab.id"
           :class="
-            `${tab_open == tab.id ? 'bg-blue-700' : ''}` +
+            `${tab_open == tab.id ? 'bg-blue-800' : ''}` +
             ' cursor-pointer bg-gray-100 p-2'
           "
           @click="tab_open = tab.id"

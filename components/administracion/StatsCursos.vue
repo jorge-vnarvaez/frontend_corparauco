@@ -593,14 +593,12 @@ export default {
       const daysSegmented = days.map((day) => {
         return {
           start: moment()
-            .subtract(1, "week")
             .day(day)
             .hour(0)
             .minute(0)
             .second(0)
             .unix(),
           end: moment()
-            .subtract(1, "week")
             .day(day)
             .hour(23)
             .minute(59)

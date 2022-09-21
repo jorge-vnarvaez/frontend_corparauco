@@ -1,25 +1,31 @@
 <template>
-  <div
-    class="flex lg:grid lg:grid-cols-12 lg:gap-y-6 space-x-8 lg:space-x-0 no-scrollbar overflow-x-scroll"
-  >
+  <div v-if="cursos.length > 0">
+    <span class="block font-bold text-3xl mr-6 mb-6">Nuevos cursos</span>
+
     <div
-      v-for="curso in cursos"
-      :key="curso.id"
-      :class="`${col_span}` + ' cursor-pointer'"
-      @click="reescribirRecomendaciones(curso)"
+      class="flex lg:grid lg:grid-cols-12 lg:gap-y-6 space-x-8 lg:space-x-0 no-scrollbar overflow-x-scroll"
     >
-      <nuxt-link :to="{ name: 'cursos-slug', params: { slug: curso.attributes.slug } }">
-        <v-img
-          v-if="curso.attributes.imagen_referencia.data"
-          width="200"
-          height="180"
-          class="rounded-xl shadow-xl"
-          :src="`${$config.apiUrl}${curso.attributes.imagen_referencia.data.attributes.url}`"
-        ></v-img>
-        <p class="mt-4 font-bold text-blue-800 w-8/12">
-          {{ curso.attributes.titulo }}
-        </p>
-      </nuxt-link>
+      <div
+        v-for="curso in cursos"
+        :key="curso.id"
+        :class="`${col_span}` + ' cursor-pointer'"
+        @click="reescribirRecomendaciones(curso)"
+      >
+        <nuxt-link
+          :to="{ name: 'cursos-slug', params: { slug: curso.attributes.slug } }"
+        >
+          <v-img
+            v-if="curso.attributes.imagen_referencia.data"
+            width="200"
+            height="180"
+            class="rounded-xl shadow-xl"
+            :src="`${$config.apiUrl}${curso.attributes.imagen_referencia.data.attributes.url}`"
+          ></v-img>
+          <p class="mt-4 font-bold text-blue-800 w-8/12">
+            {{ curso.attributes.titulo }}
+          </p>
+        </nuxt-link>
+      </div>
     </div>
   </div>
 </template>

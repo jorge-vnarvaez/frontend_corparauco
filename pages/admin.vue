@@ -10,6 +10,7 @@
 import AdminDashboard from '~/components/administracion/AdminDashboard.vue';
 
 export default {
+  middleware: ["auth", "admin"],
   components: { AdminDashboard },
 };
 </script>

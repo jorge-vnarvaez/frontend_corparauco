@@ -1,12 +1,12 @@
 <template>
-  <div class="flex flex-wrap mt-8 lg:space-x-8 spaace-y-8" v-if="tutoriales">
+  <div class="grid grid-cols-12 gap-y-8 mt-8" v-if="tutoriales">
     <CoolLightBox  :items="tutoriales" :index="index" @close="index = null">
     </CoolLightBox>
 
     <div
       v-for="(video, videoIndex) in tutoriales"
       :key="videoIndex"
-      class="cursor-pointer"
+      :class="'cursor-pointer ' + col_span"
       @click="index = videoIndex"
     >
       <div class="w-[340px] h-[240px]">
@@ -65,6 +65,22 @@ export default {
       return `https://img.youtube.com/vi/${id}/0.jpg`;
     },
   },
+  computed: {
+    col_span() {
+      switch(this.$vuetify.breakpoint.name) {
+        case 'xs':
+          return 'col-span-12';
+        case 'sm':
+          return 'col-span-6';
+        case 'md':
+          return 'col-span-6';
+        case 'lg':
+          return 'col-span-4';
+        case 'xl':
+          return 'col-span-3';
+      }
+    }
+  }
 };
 </script>
 

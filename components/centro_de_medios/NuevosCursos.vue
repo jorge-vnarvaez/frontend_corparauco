@@ -1,6 +1,5 @@
 <template>
   <div class="px-[10px] lg:px-[32px]">
-    <span class="block font-bold text-3xl mr-6 mb-6">Nuevos cursos</span>
     <nuevos-cursos-component />
   </div>
 </template>

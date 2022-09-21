@@ -2,7 +2,7 @@
   <div>
     <div class="flex flex-col lg:flex-row justify-between align-center">
       <v-img
-        src="/illustration_password_forgetted.svg"
+        src="/illustration_forgot_pass.png"
         class="w-[340px] h-[400px] lg:w-[700px] lg:h-[600px]"
         contain
       ></v-img>

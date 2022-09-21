@@ -142,12 +142,12 @@
                           <span class="text-xs lg:text-sm font-bold"
                             >Recursos</span
                           >
-                          <v-icon @click="toggleRecursosList()"
+                          <v-icon @click="toggleRecursosList(contenido.id)"
                             >mdi-chevron-down</v-icon
                           >
 
                           <div
-                            v-if="contenido.recursos.data && recursosListOpen"
+                            v-if="contenido.recursos.data && recursosListOpen == contenido.id"
                             class="bg-white py-2 px-4 absolute top-10 w-[320px] lg:w-[350px] -left-48 shadow-md z-10"
                           >
                             <div
@@ -272,7 +272,7 @@ export default {
   },
   // Espera a que el video termine y actualiza el contador finalizado y chequea que está finalizado
   created: function () {
-    this.debounceGetAnswer = _.debounce(this.ended, 40000);
+    this.debounceGetAnswer = _.debounce(this.ended, 30000);
     this.debounceGetAnswer = _.debounce(this.seleccionarContenido, 12000);
   },
   updated() {
@@ -379,8 +379,9 @@ export default {
       const i = this.indexes_open.indexOf(index);
       this.indexes_open.splice(i, 1);
     },
-    toggleRecursosList() {
-      this.recursosListOpen = !this.recursosListOpen;
+    toggleRecursosList(index) {
+      // console.log(index);
+      this.recursosListOpen = index;
     },
     showInfoCurso() {
       this.infoCurso = !this.infoCurso;
