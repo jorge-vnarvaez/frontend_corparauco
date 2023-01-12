@@ -71,6 +71,39 @@
                   flat
                 ></v-text-field>
               </v-col>
+
+              <v-col lg="4" cols="12">
+                <label
+                  class="block text-xs font-semibold text-gray-600 uppercase"
+                  >Apellido paterno <span class="text-red-500">*</span></label
+                >
+                <v-text-field
+                  class="mt-2"
+                  background-color="grey lighten-4"
+                  v-model="apellido_paterno"
+                  :rules="reglaNotNull"
+                  required
+                  solo
+                  flat
+                ></v-text-field>
+              </v-col>
+
+               <v-col :lg="is_chile ? 4 : 6" cols="12">
+                <label
+                  class="block text-xs font-semibold text-gray-600 uppercase"
+                  >Apellido materno <span class="text-red-500">*</span></label
+                >
+                <v-text-field
+                  class="mt-2"
+                  background-color="grey lighten-4"
+                  v-model="apellido_materno"
+                  :rules="reglaNotNull"
+                  required
+                  solo
+                  flat
+                ></v-text-field>
+              </v-col>
+
               <v-col lg="4" cols="12" v-show="is_chile">
                 <label
                   class="block text-xs font-semibold text-gray-600 uppercase"
@@ -82,7 +115,7 @@
                   :items="regiones"
                   background-color="grey lighten-4"
                   item-text="nombre"
-                  item-value="codigo"
+                  item-value="cod"
                   v-model="region"
                   :rules="reglaNotNull"
                   solo
@@ -102,7 +135,7 @@
                   :items="provincias"
                   background-color="grey lighten-4"
                   item-text="nombre"
-                  item-value="codigo"
+                  item-value="cod"
                   no-data-text="Debe seleccionar la región primero"
                   v-model="provincia"
                   :rules="reglaNotNull"
@@ -112,7 +145,7 @@
                 </v-select
               ></v-col>
 
-               <v-col lg="4" cols="12" v-show="is_chile">
+              <v-col lg="4" cols="12" v-show="is_chile">
                 <label
                   class="block text-xs font-semibold text-gray-600 uppercase"
                   >Comuna<span class="text-red-500">*</span></label
@@ -123,7 +156,7 @@
                   :items="comunas"
                   background-color="grey lighten-4"
                   item-text="nombre"
-                  item-value="codigo"
+                  item-value="cod"
                   no-data-text="Debe seleccionar su provincia primero"
                   v-model="comuna"
                   :rules="reglaNotNull"
@@ -133,36 +166,6 @@
                 </v-select
               ></v-col>
 
-              <v-col lg="4" cols="12">
-                <label
-                  class="block text-xs font-semibold text-gray-600 uppercase"
-                  >Apellido paterno <span class="text-red-500">*</span></label
-                >
-                <v-text-field
-                  class="mt-2"
-                  background-color="grey lighten-4"
-                  v-model="apellido_paterno"
-                  :rules="reglaNotNull"
-                  required
-                  solo
-                  flat
-                ></v-text-field>
-              </v-col>
-              <v-col :lg="is_chile ? 4 : 6" cols="12">
-                <label
-                  class="block text-xs font-semibold text-gray-600 uppercase"
-                  >Apellido materno <span class="text-red-500">*</span></label
-                >
-                <v-text-field
-                  class="mt-2"
-                  background-color="grey lighten-4"
-                  v-model="apellido_materno"
-                  :rules="reglaNotNull"
-                  required
-                  solo
-                  flat
-                ></v-text-field>
-              </v-col>
               <v-col :lg="is_chile ? 4 : 6" cols="12">
                 <label
                   class="block text-xs font-semibold text-gray-600 uppercase"
@@ -260,11 +263,6 @@
 
 <script>
 export default {
-  async asyncData(context) {
-    await context.store.dispatch("ui/loadRegiones");
-    await context.store.dispatch("ui/loadProvincias");
-    await context.store.dispatch("ui/loadComunas");
-  },
   data() {
     return {
       codigoPais: null,
@@ -283,8 +281,8 @@ export default {
       password_confirmada: null,
       email: null,
       pais: "Chile",
-      region: null,
       nombreRegion: null,
+      region: null,
       provincias: null,
       provincia: null,
       nombreProvincia: null,
@@ -323,7 +321,7 @@ export default {
       this.seleccionarPais(pais);
     },
     region: function(region) {
-      this.seleccionarProvincias(region);
+      this.seleccionarProvincias(region)
       this.nombreRegion = this.$store.getters['ui/getRegion'](region);
     },
     provincia: function(provincia) {

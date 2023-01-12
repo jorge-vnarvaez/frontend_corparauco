@@ -12,21 +12,21 @@ export const getLastContenido = (state) => {
 
 export const getVideos = (state) => (contenidos) => {
   return contenidos.filter(
-    (contenido) => contenido.attributes.formato.data.attributes.nombre == "Videos"
+    (contenido) => contenido.attributes.formato.data ? contenido.attributes.formato.data.attributes.nombre == "Videos" : false
   );
 };
 
 export const getInfografias = (state) => (contenidos) => {
   return contenidos.filter(
     (contenido) =>
-      contenido.attributes.formato.data.attributes.nombre == "Infografías"
+      contenido.attributes.formato.data ? contenido.attributes.formato.data.attributes.nombre == "Infografías" : false
   );
 };
 
 export const getClases = (state) => (contenidos) => {
   return contenidos.filter(
     (contenido) =>
-      contenido.attributes.formato.data.attributes.nombre == "Guías y clases"
+      contenido.attributes.formato.data ?  contenido.attributes.formato.data.attributes.nombre == "Guías y clases" : false
   );
 };
 

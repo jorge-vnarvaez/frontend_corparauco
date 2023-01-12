@@ -21,7 +21,7 @@
     </div>
     <v-img
       class="py-16 px-4 lg:py-20"
-      gradient="to top right, rgba(14, 116, 144,.44), rgba(25,32,72,.55)"
+      gradient="to top right, rgba(14, 116, 144,.84), rgba(25,32,72,.80)"
       :src="`${
         evento.attributes.imagen_referencia.data
           ? `${$config.apiUrl}${evento.attributes.imagen_referencia.data.attributes.url}`

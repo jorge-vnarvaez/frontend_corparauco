@@ -1,31 +1,4 @@
 export default {
-    async loadRegiones({ commit }) {
-        const { data } = await this.$axios.get(`https://apis.digital.gob.cl/dpa/regiones`, {
-            Headers: {
-                'Access-Control-Allow-Origin': '*',
-            }
-        });
-
-        commit('setRegiones', data);
-    },
-    async loadProvincias({ commit }) {
-        const { data } = await this.$axios.get(`https://apis.digital.gob.cl/dpa/provincias`, {
-            Headers: {
-                'Access-Control-Allow-Origin': '*',
-            }
-        });
-
-        commit('setProvincias', data);
-    },
-    async loadComunas({ commit }) {
-        const { data } = await this.$axios.get('https://apis.digital.gob.cl/dpa/comunas', {
-            Headers: {
-                'Access-Control-Allow-Origin': '*',
-            }
-        });
-
-        commit('setComunas', data);
-    },
     toggleMenu({ commit }) {
         commit('toggleMenu');
     },

@@ -1,6 +1,7 @@
 <template>
   <div
     class="py-[15px] lg:py-[50px] px-2 bg-gradient-to-b from-slate-50 to-white"
+    v-if="contenidos.length > 0"
   >
     <v-container class="grid grid-cols-12 lg:gap-x-20 py-4">
       <div :class="`flex flex-col ${col_span_side}`">
