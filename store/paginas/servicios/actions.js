@@ -10,6 +10,7 @@ export default {
                 'paginas.body',
                 'paginas.body.imagen',
                 'paginas.programas',
+                'paginas.convenios',
             ]
         })
 

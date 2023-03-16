@@ -2,7 +2,7 @@
   <div class="bg-gradient-to-b from-slate-50 to-white">
     <v-container v-if="pagina">
       <div v-if="pagina.header" class="py-[20px] lg:py-[50px] px-4">
-        <p class="lg:text-4xl text-2xl  text-gray-600 font-weight-light px-0">
+        <p class="lg:text-4xl text-2xl text-gray-600 font-weight-light px-0">
           {{ pagina.header.titulo }}
         </p>
 
@@ -24,13 +24,28 @@
         <div
           class="flex lg:flex-row flex-col justify-center align-center items-center rounded-xl grey lighten-5 px-4 py-12 lg:my-32 lg:space-x-20 lg:space-y-0 space-y-12"
         >
-          <span class="text-xl text-gray-600">Programas Agenciados</span>
-          <span class="text-xl text-gray-600">Otros Programas</span>
-          <span class="text-xl text-gray-600">Convenios</span>
+          <span
+            :class="[
+              infoIndex == 1 ? 'text-blue-900 font-bold' : 'text-gray-600',
+              'text-xl cursor-pointer',
+            ]"
+            @click="infoIndex = 1"
+            >Programas Agenciados</span
+          >
+          <span class="text-xl text-gray-600 cursor-not-allowed"
+            >Otros Programas</span
+          >
+          <span
+            :class="[
+              infoIndex == 3 ? 'text-blue-900 font-bold' : 'text-gray-600',
+              'text-xl cursor-pointer',
+            ]"
+            @click="infoIndex = 3"
+            >Convenios</span
+          >
         </div>
 
         <div
-          v-if="pagina.programas.data"
           class="relative px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20 mb-24"
         >
           <div
@@ -71,41 +86,97 @@
               ></circle>
             </svg>
           </div>
-          <div class="relative grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <nuxt-link
-              v-for="programa in pagina.programas.data"
-              :key="programa.id"
-              :to="{
-                name: 'programas-slug',
-                params: { slug: programa.attributes.slug },
-              }"
-              class="flex flex-col justify-between overflow-hidden text-left transition-shadow duration-200 bg-white rounded shadow-xl group hover:shadow-2xl"
+          <div v-if="infoIndex == 1">
+            <div
+              class="relative grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+              v-if="pagina.programas.data"
             >
-              <div class="p-5 text-gray-900">
-                <div
-                  class="flex items-center justify-center w-10 h-10 mb-4 rounded-full bg-indigo-50"
-                >
-                  <svg
-                    class="w-8 h-8 text-deep-purple-accent-400"
-                    stroke="currentColor"
-                    viewBox="0 0 52 52"
+              <nuxt-link
+                v-for="programa in pagina.programas.data"
+                :key="programa.id"
+                :to="{
+                  name: 'programas-slug',
+                  params: { slug: programa.attributes.slug },
+                }"
+                class="flex flex-col justify-between overflow-hidden text-left transition-shadow duration-200 bg-white rounded shadow-xl group hover:shadow-2xl"
+              >
+                <div class="p-5 text-gray-900">
+                  <div
+                    class="flex items-center justify-center w-10 h-10 mb-4 rounded-full bg-indigo-50"
                   >
-                    <polygon
-                      stroke-width="3"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      fill="none"
-                      points="29 13 14 29 25 29 23 39 38 23 27 23"
-                    ></polygon>
-                  </svg>
+                    <svg
+                      class="w-8 h-8 text-deep-purple-accent-400"
+                      stroke="currentColor"
+                      viewBox="0 0 52 52"
+                    >
+                      <polygon
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        fill="none"
+                        points="29 13 14 29 25 29 23 39 38 23 27 23"
+                      ></polygon>
+                    </svg>
+                  </div>
+                  <p class="mb-2 font-bold">{{ programa.attributes.titulo }}</p>
+                  <p class="text-sm leading-5 text-gray-900"></p>
                 </div>
-                <p class="mb-2 font-bold">{{ programa.attributes.titulo }}</p>
-                <p class="text-sm leading-5 text-gray-900"></p>
-              </div>
-              <div
-                class="w-full h-1 ml-auto duration-300 origin-left transform scale-x-0 bg-deep-purple-accent-400 group-hover:scale-x-100"
-              ></div>
-            </nuxt-link>
+                <div
+                  class="w-full h-1 ml-auto duration-300 origin-left transform scale-x-0 bg-deep-purple-accent-400 group-hover:scale-x-100"
+                ></div>
+              </nuxt-link>
+            </div>
+          </div>
+
+          <div v-if="infoIndex == 3">
+            <div
+              v-if="pagina.convenios"
+              class="relative grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            >
+              <a
+                v-for="convenio in pagina.convenios.data"
+                :key="convenio.id"
+                :href="convenio.attributes.url_info"
+                target="_blank"
+                class="flex flex-col justify-between overflow-hidden text-left transition-shadow duration-200 bg-white rounded shadow-xl group hover:shadow-2xl"
+              >
+                <div class="p-5 text-gray-900">
+                  <div
+                    class="flex items-center justify-center w-10 h-10 mb-4 rounded-full bg-indigo-50"
+                  >
+                    <svg
+                      class="w-8 h-8 text-deep-purple-accent-400"
+                      stroke="currentColor"
+                      viewBox="0 0 52 52"
+                    >
+                      <polygon
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        fill="none"
+                        points="29 13 14 29 25 29 23 39 38 23 27 23"
+                      ></polygon>
+                    </svg>
+                  </div>
+                  <p class="mb-2 font-bold">{{ convenio.attributes.nombre }}</p>
+                  <p class="text-sm leading-5 text-gray-900"></p>
+                </div>
+                <div
+                  class="w-full h-1 ml-auto duration-300 origin-left transform scale-x-0 bg-deep-purple-accent-400 group-hover:scale-x-100"
+                ></div>
+              </a>
+            </div>
+
+            <div
+              v-if="pagina.convenios.data.length == 0"
+              class="relative flex justify-center"
+            >
+
+              <p class="text-xl text-gray-600 text-center">
+                No hay convenios disponibles en este momento, por favor vuelva
+                más tarde.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -115,6 +186,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      infoIndex: 1,
+    };
+  },
   computed: {
     pagina() {
       return this.$store.getters["paginas/servicios/getPagina"](

@@ -3,7 +3,7 @@
     <!-- PAGINA NO ENCONTRADA -->
     <div
       v-if="error.statusCode === 404"
-      class="h-full w-full py-8 px-8 flex justify-center"
+      class="h-screen w-full py-8 px-8 flex justify-center align-center"
     >
       <div>
         <span
@@ -25,7 +25,7 @@
     <!-- PAGINA NO ENCONTRADA -->
 
     <!-- ERROR -->
-    <div v-else class="h-full w-full py-8 flex justify-center">
+    <div v-else class="h-screen w-full py-8 flex justify-center align-center">
       <div>
         <span
           class="block text-base lg:text-3xl text-center font-bold uppercase"
